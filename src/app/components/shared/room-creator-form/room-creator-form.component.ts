@@ -7,6 +7,7 @@ import {
   ReactiveFormsModule,
   FormsModule,
 } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-room-creator-form',
@@ -19,7 +20,7 @@ export class RoomCreatorFormComponent implements OnInit {
   public roomForm: FormGroup;
   public room_id: string = '';
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private router: Router) {
     this.roomForm = this.fb.group({
       room_id: [this.generateRoomId()], // Optional field for the room ID
       room_name: [''], // Optional field for the room name
@@ -34,20 +35,25 @@ export class RoomCreatorFormComponent implements OnInit {
   }
 
   onSubmit() {
-    if (this.roomForm.valid) {
-      const roomData = this.roomForm.value;
-      // Handle room creation logic here
-      console.log('Room created:', roomData);
-    }
+    this.createRoom()
+      .then(() => {
+        if (this.roomForm.valid) {
+          const roomData = this.roomForm.value;
+          this.router.navigate(['/lobby', roomData.room_id]);
+        }
+      })
+      .catch((error) => {
+        console.error('Error creating room:', error);
+      });
   }
 
-  createRoom(event: Event) {
-    event.preventDefault();
+  async createRoom() {
     if (this.roomForm.valid) {
       const roomData = this.roomForm.value;
       // Handle room creation logic here
       console.log('Room created:', roomData);
     }
+    this.onSubmit();
   }
 
   generateRoomId(): string {
@@ -65,12 +71,16 @@ export class RoomCreatorFormComponent implements OnInit {
   }
 
   addSeats() {
-    this.roomForm.controls['seats'].setValue(this.roomForm.controls['seats'].value + 1);
+    this.roomForm.controls['seats'].setValue(
+      this.roomForm.controls['seats'].value + 1
+    );
   }
 
   removeSeats() {
     if (this.roomForm.controls['seats'].value > 1) {
-      this.roomForm.controls['seats'].setValue(this.roomForm.controls['seats'].value - 1);
+      this.roomForm.controls['seats'].setValue(
+        this.roomForm.controls['seats'].value - 1
+      );
     }
   }
 }
