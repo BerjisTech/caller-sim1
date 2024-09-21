@@ -1,4 +1,4 @@
-<form [formGroup]="roomForm" (ngSubmit)="onSubmit()">
+<form [formGroup]="roomForm" (ngSubmit)="onSubmit()" class="w-full flex flex-wrap gap-3 items-start justify-start">
     <div class="flex items-center justify-start rounded-xl border border-slate-400 dark:border-green-700 p-2">
         <button
             class="whitespace-nowrap px-4 py-2 bg-green-700 dark:bg-slate-950 rounded-lg text-slate-50 dark:text-slate-300"
@@ -9,34 +9,36 @@
             type="submit" [disabled]="roomForm.invalid">Join room</button>
     </div>
 
-    <div class="grid grid-cols-1 grid-rows-1">
-        <label for="seats">Seats:</label>
-        <div class="grid-cols-1 grid-rows-1 flex items-center justify-start rounded-xl border border-slate-400 dark:border-green-700 p-2">
-            <button
-                class="material-symbols-outlined whitespace-nowrap px-4 py-2 bg-green-700 dark:bg-slate-950 rounded-lg text-slate-50 dark:text-slate-300"
-                (click)="createRoom($event)">remove</button>
-            <input id="seats" type="text" formControlName="seats"
+    <div class="flex items-center justify-start flex-wrap gap-2">
+        <div class="h-full relative flex items-center justify-center">
+            <label for="seats" class="absolute top-[80%] shadow-md rounded-md backdrop-blur-md px-4">Seats:</label>
+            <div
+                class="grid-cols-1 grid-rows-1 flex items-center justify-start rounded-xl border border-slate-400 dark:border-green-700 p-2">
+                <button
+                    class="material-symbols-outlined whitespace-nowrap px-4 py-2 bg-green-700 dark:bg-slate-950 rounded-lg text-slate-50 dark:text-slate-300"
+                    (click)="removeSeats()">remove</button>
+                <input id="seats" type="text" formControlName="seats"
+                    class="w-[50px] p-2 bg-transparent outline-none focus:outline-none font-semibold text-center"
+                    placeholder="Number of seats" min="1">
+                <button
+                    class="material-symbols-outlined whitespace-nowrap px-4 py-2 bg-green-700 dark:bg-slate-950 rounded-lg text-slate-50 dark:text-slate-300"
+                    (click)="addSeats()">add</button>
+            </div>
+            <div *ngIf="roomForm.get('seats')?.invalid && roomForm.get('seats')?.touched" class="text-danger">
+                Please enter at least 1 seat.
+            </div>
+        </div>
+
+        <div
+            class="h-full flex items-center justify-start rounded-xl border border-slate-400 dark:border-green-700 p-2">
+            <label>
+                <input type="checkbox" formControlName="is_private"> Private
+            </label>
+
+            <input *ngIf="roomForm.get('is_private')?.value" id="password" type="password" formControlName="password"
                 class="w-auto p-2 bg-transparent outline-none focus:outline-none font-semibold text-center"
-                placeholder="Number of seats" min="1">
-            <button
-                class="material-symbols-outlined whitespace-nowrap px-4 py-2 bg-green-700 dark:bg-slate-950 rounded-lg text-slate-50 dark:text-slate-300"
-                (click)="createRoom($event)">add</button>
+                placeholder="Room password">
         </div>
-        <div *ngIf="roomForm.get('seats')?.invalid && roomForm.get('seats')?.touched" class="text-danger">
-            Please enter at least 1 seat.
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label>
-            <input type="checkbox" formControlName="is_private"> Private Room
-        </label>
-    </div>
-
-    <div class="form-group" *ngIf="roomForm.get('is_private')?.value">
-        <label for="password">Password:</label>
-        <input id="password" type="password" formControlName="password" class="form-control"
-            placeholder="Room password">
     </div>
 
 </form>

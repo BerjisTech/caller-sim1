@@ -5,7 +5,6 @@ const config: Config = {
   darkMode: 'class', // Can also be 'media'
   important: true, // Makes Tailwind classes have higher priority
   theme: {
-    screens: {},
     container: {
       center: true,
       padding: {},

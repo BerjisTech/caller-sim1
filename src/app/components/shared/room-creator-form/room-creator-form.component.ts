@@ -21,16 +21,16 @@ export class RoomCreatorFormComponent implements OnInit {
 
   constructor(private fb: FormBuilder) {
     this.roomForm = this.fb.group({
-      room_id: [Math.random().toString(36).substring(7)], // Optional field for the room ID
+      room_id: [this.generateRoomId()], // Optional field for the room ID
       room_name: [''], // Optional field for the room name
-      seats: [1, [Validators.required, Validators.min(1)]], // Seats required, at least 1
+      seats: [2, [Validators.required, Validators.min(1)]], // Seats required, at least 1
       is_private: [false], // Default to public
       password: [''], // Optional password for private rooms
     });
   }
 
   ngOnInit(): void {
-    this.room_id = Math.random().toString(36).substring(7);
+    this.room_id = this.generateRoomId();
   }
 
   onSubmit() {
@@ -47,6 +47,30 @@ export class RoomCreatorFormComponent implements OnInit {
       const roomData = this.roomForm.value;
       // Handle room creation logic here
       console.log('Room created:', roomData);
+    }
+  }
+
+  generateRoomId(): string {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    let result = '';
+    for (let i = 0; i < 16; i++) {
+      result += characters.charAt(
+        Math.floor(Math.random() * characters.length)
+      );
+    }
+    return `${result.substring(0, 3)}-${result.substring(
+      4,
+      8
+    )}-${result.substring(8, 11)}`.toLowerCase();
+  }
+
+  addSeats() {
+    this.roomForm.controls['seats'].setValue(this.roomForm.controls['seats'].value + 1);
+  }
+
+  removeSeats() {
+    if (this.roomForm.controls['seats'].value > 1) {
+      this.roomForm.controls['seats'].setValue(this.roomForm.controls['seats'].value - 1);
     }
   }
 }
