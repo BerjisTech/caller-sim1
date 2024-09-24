@@ -1,4 +1,5 @@
 export interface Profile {
+    user_id: string;
     is_anonymous: boolean;
     is_authenticated: boolean;
     is_superuser: boolean;
@@ -10,3 +11,17 @@ export interface Profile {
     full_name?: string;
     avatar?: string;
 }
+
+export const defaultProfile: Profile = {
+    user_id: Math.random().toString(36).substring(7),
+    is_anonymous: true,
+    is_authenticated: false,
+    is_superuser: false,
+    is_staff: false,
+    username: 'Anonymous',
+    email: '',
+    first_name: '',
+    last_name: '',
+    full_name: '',
+    avatar: '',
+};

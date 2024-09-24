@@ -1,9 +1,13 @@
 <div class="relative w-screen h-screen overflow-hidden flex">
     <div class="flex flex-col items-start justify-start flex-grow">
         <div class="overflow-y-auto flex flex-grow items-center justify-center flex-wrap w-full h-full">
-            <div *ngFor="let stream of streams"
+            <video class="rounded-md border-none bg-black w-full h-full max-w-full max-h-full object-fit"
+                #local_video_element id="local_video" autoplay muted playsinline></video>
+            <div *ngFor="let remote of remote_streams"
                 class="self-stretch flex flex-grow items-center justify-center w-auto min-w-[300px] h-auto max-h-full min-h-[200px] bg-black">
-                <video class="bg-slate-900 w-auto max-w-full self-stretch h-auto max-h-full"></video>
+                <video id="remote_video" [appSrcObject]="remote.stream" autoplay playsinline
+                    class="bg-slate-900 w-auto max-w-full self-stretch h-auto max-h-full rounded-md border-none object-fit"
+                    autoplay muted="muted"></video>
             </div>
         </div>
         <div class="h-[100px]">
@@ -25,10 +29,15 @@
                 Paticipants
             </div>
         </div>
+        <div class="flex flex-col gap-2">
+            Users
+            <p *ngFor="let user of connected_users" class="w-full hover:bg-orange-50">
+                {{user|json}}
+            </p>
+        </div>
     </div>
 
-    <div class="fixed top-0 left-0">
-        <input type="number" [(ngModel)]="streams.length" min="1" max="120" step="1" (input)="updateVideoSizes()">
-        {{video_sizes | json}}
+    <div class="fixed top-0 left-0 bg-white">
+        {{remote_streams | json}}
     </div>
 </div>
