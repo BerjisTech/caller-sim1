@@ -35,25 +35,24 @@ export class RoomCreatorFormComponent implements OnInit {
   }
 
   onSubmit() {
-    this.createRoom()
-      .then(() => {
-        if (this.roomForm.valid) {
+    if (this.roomForm.valid) {
+      this.createRoom()
+        .then(() => {
           const roomData = this.roomForm.value;
           this.router.navigate(['/lobby', roomData.room_id]);
-        }
-      })
-      .catch((error) => {
-        console.error('Error creating room:', error);
-      });
+        })
+        .catch((error) => {
+          console.error('Error creating room:', error);
+        });
+    }
   }
 
   async createRoom() {
     if (this.roomForm.valid) {
       const roomData = this.roomForm.value;
       // Handle room creation logic here
-      console.log('Room created:', roomData);
+      // console.log('Room created:', roomData);
     }
-    this.onSubmit();
   }
 
   generateRoomId(): string {

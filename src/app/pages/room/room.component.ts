@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import {
+  AfterViewChecked,
   AfterViewInit,
+  ChangeDetectorRef,
   Component,
   NgZone,
   OnDestroy,
@@ -12,7 +14,6 @@ import { Profile } from '../../interfaces/user/profile';
 import { SignalingService } from '../../services/realtime/signaling.service';
 import { ProfileService } from '../../services/user/profile.service';
 import { NotificationService } from '../../services/notifications/notification.service';
-import { SrcObjectDirective } from '../../directives/communication/src-object.directive';
 import { SharedModule } from '../../modules/shared/shared.module';
 import { ActivatedRoute } from '@angular/router';
 
@@ -29,7 +30,9 @@ import { ActivatedRoute } from '@angular/router';
   templateUrl: './room.component.html',
   styleUrl: './room.component.scss',
 })
-export class RoomComponent implements OnInit, OnDestroy, AfterViewInit {
+export class RoomComponent
+  implements OnInit, OnDestroy, AfterViewChecked, AfterViewInit
+{
   public user!: Profile;
   public local_video!: HTMLVideoElement;
   public local_stream!: MediaStream;
@@ -62,13 +65,23 @@ export class RoomComponent implements OnInit, OnDestroy, AfterViewInit {
   public is_admin = false;
   public connected_users: Array<{ user_id: string; socket_id: string }> = [];
   public is_initiator: boolean = false;
+  public handlersSetUp: boolean = false;
+
+  public video_sizes: {
+    width: number; // grid-template-columns count
+    height: number; // grid-template-rows count
+  } = {
+    width: 1,
+    height: 1,
+  };
 
   constructor(
     private signalingService: SignalingService,
     private profileService: ProfileService,
     private zone: NgZone,
     private notificationService: NotificationService,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private cdr: ChangeDetectorRef // Inject ChangeDetectorRef
   ) {
     this.activatedRoute.params.subscribe({
       next: (params) => {
@@ -79,32 +92,45 @@ export class RoomComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   async ngOnInit() {
-    await this.profileService.getUser().then((user) => {
+    await this.profileService.getUser().then(async (user) => {
       if (user) {
         this.user = user;
         this.user_id = this.user.user_id;
+
+        await this.joinRoom().then(() => {
+          console.log('Joined room:', this.room_name);
+        });
+
+        this.local_video = document.getElementById(
+          'local_video'
+        ) as HTMLVideoElement;
+        if (this.local_video) {
+          this.local_video.muted = true;
+        }
+        if (!this.handlersSetUp) {
+          this.setupSignalingHandlers();
+          this.handlersSetUp = true;
+        }
+        this.listDevices();
+        this.updateVideoSizes();
       }
-
-      console.log('User ID:', this.user_id);
-    });
-
-    this.local_video = document.getElementById(
-      'local_video'
-    ) as HTMLVideoElement;
-    if (this.local_video) {
-      this.local_video.muted = true;
-    }
-    this.setupSignalingHandlers();
-    this.listDevices();
-    await this.joinRoom().then(() => {
-      console.log('Joined room:', this.room_name);
     });
   }
 
   ngAfterViewInit() {
-    if (this.local_video) {
-      this.local_video.srcObject = this.local_stream;
-    }
+    this.updateVideoSizes();
+    // if (this.local_video) {
+    //   this.local_video.srcObject = this.local_stream;
+    // }
+  }
+
+  ngAfterViewChecked() {
+    this.updateVideoSizes();
+  }
+
+  // Detect changes on ui
+  ngDoCheck() {
+    this.updateVideoSizes();
   }
 
   private setupSignalingHandlers() {
@@ -186,6 +212,7 @@ export class RoomComponent implements OnInit, OnDestroy, AfterViewInit {
     // Handle room errors
     this.signalingService.onRoomJoinError().subscribe((error) => {
       this.room_error = error;
+      this.createRoom();
     });
   }
 
@@ -202,7 +229,7 @@ export class RoomComponent implements OnInit, OnDestroy, AfterViewInit {
       this.local_stream = await navigator.mediaDevices.getUserMedia(
         constraints
       );
-      this.local_video.srcObject = this.local_stream;
+      // this.local_video.srcObject = this.local_stream;
     } catch (error) {
       this.is_in_call = false;
       this.notificationService.notify(
@@ -214,20 +241,8 @@ export class RoomComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   async createRoom() {
-    // Room name in the format of xxxx-xxxx-xxxx
-    let room_name = Math.random().toString(36).substring(2, 22);
-    room_name = room_name
-      .split('')
-      .map((char, index) => {
-        // Every 4th character should be a hyphen
-        if (index === 0) return '';
-        if (index % 5 === 0 && index !== 0) return '-';
-        return char;
-      })
-      .join('');
-
-    this.signalingService.createRoom(room_name, this.user_id);
-    this.room_name = room_name;
+    this.signalingService.createRoom(this.room_name, this.user_id);
+    this.joinRoom();
   }
 
   async createPeerConnection(socket_id: string): Promise<RTCPeerConnection> {
@@ -506,6 +521,31 @@ export class RoomComponent implements OnInit, OnDestroy, AfterViewInit {
     this.connected_users.forEach((user) => {
       return this.remote_streams.find((s) => s.id === user.socket_id)?.stream;
     });
+  }
+
+  updateVideoSizes(): void {
+    this.video_sizes = this.calculateVideoSizes();
+  }
+
+  calculateVideoSizes(): { width: number; height: number } {
+    const num_streams = this.remote_streams.length + 1;
+
+    const width = Math.ceil(Math.sqrt(num_streams)); // Dynamic column count
+    const height = Math.ceil(num_streams / width); // Dynamic row count
+
+    return { width, height };
+  }
+
+  // Generate grid styles dynamically
+  getGridStyles(): any {
+    const { width, height } = this.calculateVideoSizes();
+    const columns = `repeat(${width}, 1fr)`;
+    const rows = `repeat(${height}, 1fr)`;
+    return {
+      'grid-template-columns': columns,
+      'grid-template-rows': rows,
+      'height': `calc(100vh - 100px)`, // Adjust height based on available space
+    };
   }
 
   ngOnDestroy() {

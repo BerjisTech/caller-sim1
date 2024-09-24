@@ -10,8 +10,8 @@ export class SignalingService {
 
   constructor() {
     // Initialize the socket connection to the signaling server
-    this.socket = io('/ws/signal', {
-      path: '/ws/socket.io',
+    this.socket = io('/signal', {
+      path: '/socket.io',
       transports: ['websocket'],
     });
 
@@ -22,6 +22,14 @@ export class SignalingService {
 
     this.socket.on('disconnect', () => {
       console.log('Disconnected from signaling server');
+    });
+
+    this.socket.on('connect_error', (error: Error) => {
+      console.error('Connection error:', error);
+    });
+    
+    this.socket.on('error', (error: Error) => {
+      console.error('Connection error:', error);
     });
   }
 
