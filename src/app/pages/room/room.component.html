@@ -1,14 +1,17 @@
 <div class="relative w-screen h-screen overflow-hidden flex" (timeupdate)="calculateVideoSizes()">
     <div class="flex flex-col items-start justify-start flex-grow h-screen">
-        <div [ngStyle]="getGridStyles()" class="grid w-full overflow-y-auto">
-            <div *ngFor="let remote of remote_streams" class="bg-slate-950 flex items-center justify-center">
+        <div [ngStyle]="getGridStyles()"
+            class="flex flex-col items-center justify-center lg:grid w-full overflow-y-auto">
+            <div [ngStyle]="getVideoStyles()" *ngFor="let remote of remote_streams"
+                class="self-stretch bg-slate-950 flex items-center justify-center">
                 <video id="remote_video" [appSrcObject]="remote.stream" autoplay playsinline
-                    class="bg-slate-900 w-auto max-w-full self-stretch h-auto max-h-full rounded-md border-none"
+                    class="transform -scale-x-100 bg-slate-900 w-auto max-w-full self-stretch h-auto max-h-full rounded-md border-none"
                     autoplay muted="muted"></video>
             </div>
-            <div class="bg-slate-950 flex items-center justify-center">
-                <video class="rounded-md border-none bg-black w-full h-full max-w-full max-h-full" #local_video_element
-                    id="local_video" [srcObject]="local_stream" autoplay muted playsinline></video>
+            <div [ngStyle]="getVideoStyles()" class="self-stretch bg-slate-950 flex items-center justify-center">
+                <video
+                    class="transform -scale-x-100 rounded-md border-none bg-black w-full h-full max-w-full max-h-full"
+                    #local_video_element id="local_video" [srcObject]="local_stream" autoplay muted playsinline></video>
             </div>
         </div>
         <div class="h-[100px] w-full flex items-center justify-center gap-3">
@@ -19,24 +22,37 @@
         </div>
     </div>
     <div *ngIf="show_sidechat" class="h-screen w-[500px] bg-white dark:bg-slate-950">
-        <div class="flex w-full gap-2 items-center justify-center p-2">
-            <div
+        <div class="h-[70px] flex w-full gap-2 items-center justify-center p-2">
+            <div (click)="toggleSidechatTabs('chat')"
                 class="flex-grow rounded-xl text-center px-3 py-2 bg-slate-300 dark:bg-slate-800 text-slate-950 dark:text-slate-200">
                 Chat
             </div>
-            <div
+            <div (click)="toggleSidechatTabs('details')"
                 class="flex-grow rounded-xl text-center px-3 py-2 bg-slate-300 dark:bg-slate-800 text-slate-950 dark:text-slate-200">
                 Details
             </div>
-            <div
+            <div (click)="toggleSidechatTabs('participants')"
                 class="flex-grow rounded-xl text-center px-3 py-2 bg-slate-300 dark:bg-slate-800 text-slate-950 dark:text-slate-200">
                 Paticipants
             </div>
         </div>
-        <div>
+        <div *ngIf="side_chat_tag == 'chat'"
+            class="w-full flex flex-col justify-start items-start flex-grow relative gap-2">
+            <div class="h-[calc(100vh-140px)] w-full">
+                <div *ngFor="let msg of messages" class="flex justify-start items-start self-stretch  ">
+                    {{ msg.user_id }}: {{ msg.message }}
+                </div>
+            </div>
+            <div class="h-[70px] w-full flex items-center justify-center">
+                <input class="p-2 bg-transparent text-dark dark:text-white flex-grow" type="text"
+                    [(ngModel)]="chat_message" placeholder="Type a message"
+                    (keyup.enter)="sendMessage(chat_message); chat_message = ''" />
+            </div>
+        </div>
+        <div *ngIf="side_chat_tag == 'details'">
             Room: {{room_name}}
         </div>
-        <div class="flex flex-col gap-2">
+        <div *ngIf="side_chat_tag == 'participants'" class="flex flex-col gap-2">
             Users
             <p *ngFor="let user of connected_users" class="w-full hover:bg-orange-50">
                 {{user|json}}

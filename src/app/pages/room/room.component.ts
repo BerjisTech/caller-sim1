@@ -16,6 +16,7 @@ import { ProfileService } from '../../services/user/profile.service';
 import { NotificationService } from '../../services/notifications/notification.service';
 import { SharedModule } from '../../modules/shared/shared.module';
 import { ActivatedRoute } from '@angular/router';
+import { min } from 'rxjs';
 
 @Component({
   selector: 'app-room',
@@ -119,9 +120,10 @@ export class RoomComponent
 
   ngAfterViewInit() {
     this.updateVideoSizes();
-    // if (this.local_video) {
-    //   this.local_video.srcObject = this.local_stream;
-    // }
+    if (this.local_video) {
+      // this.local_video.srcObject = this.local_stream;
+      this.local_video.muted;
+    }
   }
 
   ngAfterViewChecked() {
@@ -544,7 +546,20 @@ export class RoomComponent
     return {
       'grid-template-columns': columns,
       'grid-template-rows': rows,
-      'height': `calc(100vh - 100px)`, // Adjust height based on available space
+      height: `calc(100vh - 100px)`, // Adjust height based on available space
+    };
+  }
+
+  // Generate video styles dynamically
+  getVideoStyles(): any {
+    const { height, width } = this.calculateVideoSizes();
+    const videoHeight = `calc((100vh - 100px) / ${height})`;
+    const videoWidth = `calc((100vw - 100px) / ${width})`;
+    return {
+      height: videoHeight,
+      width: videoWidth,
+      minWidth: '300px',
+      minHeight: '200px',
     };
   }
 
