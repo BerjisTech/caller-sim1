@@ -8,6 +8,10 @@ import {
   FormsModule,
 } from '@angular/forms';
 import { Router } from '@angular/router';
+import {
+  SUB_TAGS_FROM_SUGGESTED_TAGS,
+  SUGGESTED_TAGS,
+} from '../../../constants/constants';
 
 @Component({
   selector: 'app-room-creator-form',
@@ -19,6 +23,9 @@ import { Router } from '@angular/router';
 export class RoomCreatorFormComponent implements OnInit {
   public roomForm: FormGroup;
   public room_id: string = '';
+  public tags!: string;
+  public tags_array: string[] = [];
+  public sugested_tags: string[] = SUGGESTED_TAGS;
 
   constructor(private fb: FormBuilder, private router: Router) {
     this.roomForm = this.fb.group({
@@ -27,6 +34,7 @@ export class RoomCreatorFormComponent implements OnInit {
       seats: [2, [Validators.required, Validators.min(1)]], // Seats required, at least 1
       is_private: [false], // Default to public
       password: [''], // Optional password for private rooms
+      tags: [''], // Optional tags for the room
     });
   }
 
@@ -81,5 +89,34 @@ export class RoomCreatorFormComponent implements OnInit {
         this.roomForm.controls['seats'].value - 1
       );
     }
+  }
+
+  updateTags() {
+    this.tags_array = this.tags.split(',');
+  }
+
+  removeTag(tag: string) {
+    this.tags_array = this.tags_array.filter((t) => t !== tag);
+    this.tags = this.tags_array.join(',');
+
+    // Check if tags_array has any array in SUGGESTED_TAGS and revert this.suggested_tags to SUGGESTED_TAGS is no items in tags_array exist in SUGGESTED_TAGS
+    if (this.tags_array.length === 0) {
+      this.sugested_tags = SUGGESTED_TAGS;
+    } else {
+      this.sugested_tags = this.sugested_tags.filter(
+        (t) => !this.tags_array.includes(t)
+      );
+    }
+  }
+
+  addSuggestedTag(tag: string) {
+    // Add if there are no tags or this tag does not exist
+    if (!this.tags_array || !this.tags_array.includes(tag)) {
+      this.tags_array.push(tag);
+      this.tags = this.tags_array.join(',');
+    }
+    this.sugested_tags = SUB_TAGS_FROM_SUGGESTED_TAGS[tag]
+      .split(',')
+      .map((t) => t.trim());
   }
 }

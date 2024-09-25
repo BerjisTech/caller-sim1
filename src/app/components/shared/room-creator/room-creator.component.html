@@ -1,12 +1,33 @@
-<div
-    class="w-screen h-screen bg-slate-50 dark:bg-slate-950 overflow-hidden flex items-center justify-center flex-wrap gap-3 p-7">
-    <div class="w-full flex-grow min-w-[47%] flex flex-col items-start justify-center">
-        <app-dark-mode></app-dark-mode>
-        <p class="text-[70px] text-slate-950 dark:text-slate-400 h-[400px] md:h-[100px] ">
-            <app-typing-effect></app-typing-effect>
+<div class="bg-green-100 dark:bg-slate-950 min-w-full min-h-screen flex flex-col items-center justify-between p-4">
+    <nav class="flex items-center justify-center gap-3">
+        <a href="/"
+            class="font-semibold text-slate-950 hover:text-slate-500 dark:text-slate-300 dark:hover:text-slate-600 text-[20px]">Home</a>
+        <a href="/"
+            class="font-semibold text-slate-950 hover:text-slate-500 dark:text-slate-300 dark:hover:text-slate-600 text-[20px]">About</a>
+        <a href="/"
+            class="font-semibold text-slate-950 hover:text-slate-500 dark:text-slate-300 dark:hover:text-slate-600 text-[20px]">FaQ</a>
+    </nav>
+    <div class="relative flex flex-col items-center justify-center">
+        <p class="text-green-950 dark:text-green-800 w-[500px] text-[90px] text-center font-black">
+            CONNECT
         </p>
-        <p class="text-slate-500 text-[30px]">Talk, vent, share ideas, or just look at each other awkwardly</p>
-        <app-room-creator-form></app-room-creator-form>
+        <p class="text-green-950 dark:text-green-800 w-[500px] text-[70px] text-center font-black">
+            WITH PEERS
+        </p>
+        <div>
+            One on one with like minded smegheads
+        </div>
+        <!-- Left -->
+        <div class="bg-red-300 rounded-full h-[120px] w-[120px] absolute top-[-70px] left-[50px]"></div>
+        <div class="bg-red-300 rounded-full h-[70px] w-[70px] absolute top-[90px] left-[-30px]"></div>
+        <div class="bg-red-300 rounded-full h-[100px] w-[100px] absolute top-[200px] left-[-50px]"></div>
+        <!-- Right -->
+        <div class="bg-red-300 rounded-full h-[80px] w-[80px] absolute top-[-40px] right-[50px]"></div>
+        <div class="bg-red-300 rounded-full h-[100px] w-[100px] absolute top-[70px] right-[-50px]"></div>
+        <div class="bg-red-300 rounded-full h-[50px] w-[50px] absolute top-[200px] right-[0px]"></div>
+        <div>
+            <app-room-creator-form></app-room-creator-form>
+        </div>
     </div>
-    <div class="w-full flex-grow min-w-[47%]"></div>
+    <app-dark-mode></app-dark-mode>
 </div>

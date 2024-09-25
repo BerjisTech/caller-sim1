@@ -17,6 +17,7 @@ import { NotificationService } from '../../services/notifications/notification.s
 import { SharedModule } from '../../modules/shared/shared.module';
 import { ActivatedRoute } from '@angular/router';
 import { min } from 'rxjs';
+import { Room } from '../../interfaces/call/room';
 
 @Component({
   selector: 'app-room',
@@ -45,6 +46,7 @@ export class RoomComponent
   }> = [];
   public data_channels: { [socket_id: string]: RTCDataChannel } = {};
   public user_id: string = Math.random().toString(36).substring(2, 15);
+  public room!: Room;
   public room_name: string = '';
   public room_error: string = '';
   public is_muted = false;
