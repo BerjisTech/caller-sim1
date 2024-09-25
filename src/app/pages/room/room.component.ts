@@ -55,7 +55,8 @@ export class RoomComponent
   public side_chat_tag: string = 'chat';
   public chat_message: string = '';
   public messages: Array<{ user_id: string; message: string }> = [];
-  public reactions: Array<{ user_id: string; reaction: string }> = [];
+  public reactions: Array<{ user_id: string; reaction: string; left: number }> =
+    [];
   public show_reactions: boolean = false;
   public audio_devices: MediaDeviceInfo[] = [];
   public show_audio_devices: boolean = false;
@@ -198,7 +199,13 @@ export class RoomComponent
     });
 
     this.signalingService.onReceiveReaction().subscribe((data) => {
-      this.reactions.push({ user_id: data.user_id, reaction: data.reaction });
+      for (let i = 0; i < 5; i++) {
+        this.reactions.push({
+          user_id: data.user_id,
+          reaction: data.reaction,
+          left: this.getRandomPosition(),
+        });
+      }
     });
 
     this.signalingService.onAdminAction().subscribe((data) => {
@@ -458,15 +465,32 @@ export class RoomComponent
 
   sendMessage(message: string) {
     for (const dataChannel of Object.values(this.data_channels)) {
-      dataChannel.send(
-        JSON.stringify({ type: 'chat', user_id: this.user_id, message })
-      );
+      if (dataChannel.readyState === 'open') {
+        dataChannel.send(
+          JSON.stringify({ type: 'chat', user_id: this.user_id, message })
+        );
+      }
     }
     this.messages.push({ user_id: this.user_id, message });
   }
 
   sendReaction(reaction: string) {
     this.signalingService.sendReaction(reaction);
+    for (let i = 0; i < 5; i++) {
+      this.reactions.push({
+        user_id: this.user_id,
+        reaction: reaction,
+        left: this.getRandomPosition(),
+      });
+    }
+  }
+
+  // Method to toggle reactions
+  toggleReactions(): void {
+    this.show_reactions = true;
+    setTimeout(() => {
+      this.show_reactions = false;
+    }, 3000); // Show reactions for 3 seconds
   }
 
   handleAdminAction(data: any) {
@@ -564,6 +588,18 @@ export class RoomComponent
       minWidth: '300px',
       minHeight: '200px',
     };
+  }
+
+  getRandomPosition() {
+    // [style.left.%]
+    return Math.random() * 100;
+  }
+
+  randomSeconds() {
+    const min = 1;
+    const max = 5;
+    const random = Math.random() * (max - min) + min;
+    return `${random}s`;
   }
 
   ngOnDestroy() {

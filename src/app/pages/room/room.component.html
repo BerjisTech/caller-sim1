@@ -1,4 +1,4 @@
-<div class="bg-white dark:bg-slate-950 text-slate-950 dark:text-slate-50 relative w-screen h-screen overflow-hidden flex"
+<div class="bg-green-50 dark:bg-slate-800 text-slate-950 dark:text-slate-50 relative w-screen h-screen overflow-hidden flex"
     (timeupdate)="calculateVideoSizes()">
     <div
         class="{{ show_sidechat ? 'w-[calc(100vw-500px)]':'flex-grow'}} flex flex-col items-start justify-start h-screen">
@@ -18,44 +18,74 @@
             </div>
         </div>
         <div class="h-[100px] w-full flex items-center justify-center gap-3">
+            <div class="fixed top-[-70px] left-0 w-full h-full pointer-events-none overflow-hidden">
+                <div *ngFor="let reaction of reactions" class="text-white reaction" [style.left.%]="reaction.left"
+                    [style.animation-duration]="randomSeconds()">
+                    {{ reaction.reaction }}
+                </div>
+            </div>
             <app-dark-mode></app-dark-mode>
+            <div class="relative flex items-center justify-center">
+                <div
+                    class="absolute bottom-[110%] left-0 right-0 rounded-xl bg-green-100 dark:bg-green-950 flex items-center justify-center gap-2">
+                    <span class="text-[20px]" role="button" (click)="sendReaction('😂')">😂</span>
+                    <span class="text-[20px]" role="button" (click)="sendReaction('😍')">😍</span>
+                    <span class="text-[20px]" role="button" (click)="sendReaction('👏')">👏</span>
+                    <span class="text-[20px]" role="button" (click)="sendReaction('👍')">👍</span>
+                    <span class="text-[20px]" role="button" (click)="sendReaction('🔥')">🔥</span>
+                    <span class="text-[20px]" role="button" (click)="sendReaction('🎉')">🎉</span>
+                    <span class="text-[20px]" role="button" (click)="sendReaction('👋')">👋</span>
+                    <span class="text-[20px]" role="button" (click)="sendReaction('🙌')">🙌</span>
+                    <span class="text-[20px]" role="button" (click)="sendReaction('🤩')">🤩</span>
+                    <span class="text-[20px]" role="button" (click)="sendReaction('🤔')">🤔</span>
+                    <span class="text-[20px]" role="button" (click)="sendReaction('🤗')">🤗</span>
+                    <span class="text-[20px]" role="button" (click)="sendReaction('🤭')">🤭</span>
+                </div>
+                <button>React</button>
+            </div>
             <button (click)="toggleAudio()">Mute</button>
             <button (click)="toggleVideo()">Camera</button>
             <button (click)="show_sidechat = !show_sidechat">Information</button>
         </div>
     </div>
-    <div *ngIf="show_sidechat" class="h-screen w-[500px] bg-white dark:bg-slate-950">
+    <div *ngIf="show_sidechat"
+        class="h-screen w-[500px] bg-transparent dark:bg-slate-950 p-3 flex flex-col gap-3 items-start justify-start">
         <div class="h-[70px] flex w-full gap-2 items-center justify-center p-2">
             <div role="button" (click)="toggleSidechatTabs('chat')"
-                class="flex-grow rounded-xl text-center px-3 py-2 bg-slate-300 dark:bg-slate-800 text-slate-950 dark:text-slate-200">
+                class="shadow-lg flex-grow rounded-xl text-center px-3 py-2 bg-slate-300 dark:bg-slate-950 text-slate-950 dark:text-slate-200">
                 Chat
             </div>
             <div role="button" (click)="toggleSidechatTabs('details')"
-                class="flex-grow rounded-xl text-center px-3 py-2 bg-slate-300 dark:bg-slate-800 text-slate-950 dark:text-slate-200">
+                class="shadow-lg flex-grow rounded-xl text-center px-3 py-2 bg-slate-300 dark:bg-slate-950 text-slate-950 dark:text-slate-200">
                 Details
             </div>
             <div role="button" (click)="toggleSidechatTabs('participants')"
-                class="flex-grow rounded-xl text-center px-3 py-2 bg-slate-300 dark:bg-slate-800 text-slate-950 dark:text-slate-200">
+                class="shadow-lg flex-grow rounded-xl text-center px-3 py-2 bg-slate-300 dark:bg-slate-950 text-slate-950 dark:text-slate-200">
                 Paticipants
             </div>
         </div>
         <div *ngIf="side_chat_tag == 'chat'"
             class="w-full flex flex-col justify-start items-start flex-grow relative gap-2">
-            <div class="h-[calc(100vh-140px)] w-full">
+            <div class="rounded-lg shadow-lg h-[calc(100vh-200px)] w-full">
                 <div *ngFor="let msg of messages" class="flex justify-start items-start self-stretch  ">
                     {{ msg.user_id }}: {{ msg.message }}
                 </div>
             </div>
-            <div class="h-[70px] w-full flex items-center justify-center">
+            <div class="rounded-lg shadow-lg h-[70px] w-full flex items-center justify-center">
+                <span class="text-[20px]">😂</span>
                 <input class="p-2 bg-transparent text-dark dark:text-white flex-grow" type="text"
                     [(ngModel)]="chat_message" placeholder="Type a message"
                     (keyup.enter)="sendMessage(chat_message); chat_message = ''" />
+                <span (click)="sendMessage(chat_message); chat_message = ''"
+                    class="text-[20px] material-symbols-outlined" role="button">send</span>
             </div>
         </div>
-        <div *ngIf="side_chat_tag == 'details'">
+        <div *ngIf="side_chat_tag == 'details'"
+            class="rounded-lg shadow-lg w-full flex flex-col justify-start items-start flex-grow relative gap-2">
             Room: {{room_name}}
         </div>
-        <div *ngIf="side_chat_tag == 'participants'" class="flex flex-col gap-2">
+        <div *ngIf="side_chat_tag == 'participants'"
+            class="rounded-lg shadow-lg w-full flex flex-col justify-start items-start flex-grow relative gap-2">
             Users
             <p *ngFor="let user of connected_users" class="w-full hover:bg-orange-50">
                 {{user|json}}

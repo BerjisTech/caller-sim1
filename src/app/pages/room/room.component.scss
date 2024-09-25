@@ -1,0 +1,18 @@
+.reaction {
+    transition: all 0.5s;
+    position: absolute;
+    font-size: 2rem;
+    animation: floatDown 3s linear;
+}
+
+@keyframes floatDown {
+    0% {
+        top: -10%;
+        opacity: 1;
+    }
+
+    100% {
+        top: 110%;
+        opacity: 0;
+    }
+}
