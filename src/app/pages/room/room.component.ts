@@ -67,7 +67,10 @@ export class RoomComponent
   public connected_users: Array<{ user_id: string; socket_id: string }> = [];
   public is_initiator: boolean = false;
   public handlersSetUp: boolean = false;
-
+  public vudeo_layouts: { [layout_name: string]: string } = {
+    grid: 'grid',
+    list: 'list',
+  };
   public video_sizes: {
     width: number; // grid-template-columns count
     height: number; // grid-template-rows count
@@ -530,7 +533,7 @@ export class RoomComponent
   }
 
   calculateVideoSizes(): { width: number; height: number } {
-    const num_streams = this.remote_streams.length + 1;
+    const num_streams = this.remote_streams.length;
 
     const width = Math.ceil(Math.sqrt(num_streams)); // Dynamic column count
     const height = Math.ceil(num_streams / width); // Dynamic row count
@@ -554,10 +557,10 @@ export class RoomComponent
   getVideoStyles(): any {
     const { height, width } = this.calculateVideoSizes();
     const videoHeight = `calc((100vh - 100px) / ${height})`;
-    const videoWidth = `calc((100vw - 100px) / ${width})`;
+    const videoWidth = `calc(100% / ${width})`;
     return {
       height: videoHeight,
-      width: videoWidth,
+      // width: videoWidth,
       minWidth: '300px',
       minHeight: '200px',
     };
