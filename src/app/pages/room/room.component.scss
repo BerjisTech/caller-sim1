@@ -3,6 +3,7 @@
     position: absolute;
     font-size: 2rem;
     animation: floatDown 3s linear;
+    opacity: 0;
 }
 
 @keyframes floatDown {

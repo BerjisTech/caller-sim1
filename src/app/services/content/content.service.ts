@@ -17,4 +17,8 @@ export class ContentService {
   getDarkMode() {
     return this.darkModeSubsject.value;
   }
+
+  copyContent(content: string) {
+    navigator.clipboard.writeText(content);
+  }
 }

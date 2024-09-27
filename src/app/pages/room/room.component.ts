@@ -16,8 +16,8 @@ import { ProfileService } from '../../services/user/profile.service';
 import { NotificationService } from '../../services/notifications/notification.service';
 import { SharedModule } from '../../modules/shared/shared.module';
 import { ActivatedRoute } from '@angular/router';
-import { min } from 'rxjs';
 import { Room } from '../../interfaces/call/room';
+import { ContentService } from '../../services/content/content.service';
 
 @Component({
   selector: 'app-room',
@@ -35,6 +35,7 @@ import { Room } from '../../interfaces/call/room';
 export class RoomComponent
   implements OnInit, OnDestroy, AfterViewChecked, AfterViewInit
 {
+  public base_url = window.location.origin;
   public user!: Profile;
   public local_video!: HTMLVideoElement;
   public local_stream!: MediaStream;
@@ -88,7 +89,7 @@ export class RoomComponent
     private zone: NgZone,
     private notificationService: NotificationService,
     private activatedRoute: ActivatedRoute,
-    private cdr: ChangeDetectorRef // Inject ChangeDetectorRef
+    private contentService: ContentService
   ) {
     this.activatedRoute.params.subscribe({
       next: (params) => {
@@ -97,6 +98,8 @@ export class RoomComponent
       },
     });
   }
+
+  public copyContent = (content: string) => this.contentService.copyContent(content);
 
   async ngOnInit() {
     await this.profileService.getUser().then(async (user) => {
@@ -466,6 +469,9 @@ export class RoomComponent
   }
 
   sendMessage(message: string) {
+    if (!message) {
+      return;
+    }
     for (const dataChannel of Object.values(this.data_channels)) {
       if (dataChannel.readyState === 'open') {
         dataChannel.send(
@@ -599,7 +605,7 @@ export class RoomComponent
 
   randomSeconds() {
     const min = 1;
-    const max = 5;
+    const max = 3;
     const random = Math.random() * (max - min) + min;
     return `${random}s`;
   }

@@ -12,6 +12,8 @@ import {
   SUB_TAGS_FROM_SUGGESTED_TAGS,
   SUGGESTED_TAGS,
 } from '../../../constants/constants';
+import { CallManagementService } from '../../../services/call/call-management.service';
+import { Room } from '../../../interfaces/call/room';
 
 @Component({
   selector: 'app-room-creator-form',
@@ -21,13 +23,19 @@ import {
   styleUrl: './room-creator-form.component.scss',
 })
 export class RoomCreatorFormComponent implements OnInit {
+  public rooms: Room[] = [];
+  public searching_for_rooms: boolean = false;
   public roomForm: FormGroup;
   public room_id: string = '';
   public tags!: string;
   public tags_array: string[] = [];
   public sugested_tags: string[] = SUGGESTED_TAGS;
 
-  constructor(private fb: FormBuilder, private router: Router) {
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private callManagement: CallManagementService
+  ) {
     this.roomForm = this.fb.group({
       room_id: [this.generateRoomId()], // Optional field for the room ID
       room_name: [''], // Optional field for the room name
@@ -42,15 +50,42 @@ export class RoomCreatorFormComponent implements OnInit {
     this.room_id = this.generateRoomId();
   }
 
-  onSubmit() {
+  async onSubmit() {
+    this.searching_for_rooms = true;
     if (this.roomForm.valid) {
-      this.createRoom()
-        .then(() => {
-          const roomData = this.roomForm.value;
-          this.router.navigate(['/lobby', roomData.room_id]);
+      // this.createRoom()
+      //   .then(() => {
+      //     const roomData = this.roomForm.value;
+      //     this.router.navigate(['/lobby', roomData.room_id]);
+      //   })
+      //   .catch((error) => {
+      //     console.error('Error creating room:', error);
+      //   });
+      await this.callManagement
+        .searchRoomsByTags(this.tags_array)
+        .then((rooms) => {
+          console.log('Rooms found:', rooms);
+          this.rooms = rooms;
+          this.searching_for_rooms = false;
+
+          // if room count is not 0 join random room otherwise create room with room name
+          if (this.rooms.length > 0) {
+            this.router.navigate(['/lobby', this.rooms[0].room_id]);
+          } else {
+            this.createRoom().then(() => {
+              const roomData = this.roomForm.value;
+              this.router.navigate(['/lobby', roomData.room_id]);
+            });
+          }
         })
         .catch((error) => {
-          console.error('Error creating room:', error);
+          console.error('Error searching for rooms:', error);
+          this.searching_for_rooms = false;
+          // create room if no rooms found
+          this.createRoom().then(() => {
+            const roomData = this.roomForm.value;
+            this.router.navigate(['/lobby', roomData.room_id]);
+          });
         });
     }
   }

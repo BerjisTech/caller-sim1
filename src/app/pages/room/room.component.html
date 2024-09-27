@@ -1,5 +1,15 @@
 <div class="bg-green-50 dark:bg-slate-800 text-slate-950 dark:text-slate-50 relative w-screen h-screen overflow-hidden flex"
     (timeupdate)="calculateVideoSizes()">
+
+    <div *ngIf="connected_users.length < 2"
+        class="fixed top-10 left-10 rounded-md shadow-xl p-2 bg-green-300 dark:bg-green-950 overflow-hidden">
+        <div class="flex flex-col items-center justify-center h-full w-full" role="button">
+            <p class="text-[50px]">You're in the room alone</p>
+            <p class="text-[30px]">Share this link to invite others while we get you random peers</p>
+            <p class="text-[20px]" role="button" (click)="copyContent(base_url+'/lobby/'+room_name)">
+                {{base_url}}/lobby/{{room_name}}</p>
+        </div>
+    </div>
     <div
         class="{{ show_sidechat ? 'w-[calc(100vw-500px)]':'flex-grow'}} flex flex-col items-start justify-start h-screen">
         <div [ngStyle]="getGridStyles()"
@@ -18,39 +28,67 @@
             </div>
         </div>
         <div class="h-[100px] w-full flex items-center justify-center gap-3">
-            <div class="fixed top-[-70px] left-0 w-full h-full pointer-events-none overflow-hidden">
-                <div *ngFor="let reaction of reactions" class="text-white reaction" [style.left.%]="reaction.left"
-                    [style.animation-duration]="randomSeconds()">
+            <div class="fixed top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
+                <div *ngFor="let reaction of reactions" class="text-white reaction text-[70px]"
+                    [style.left.%]="reaction.left" [style.animation-duration]="randomSeconds()">
                     {{ reaction.reaction }}
                 </div>
             </div>
             <app-dark-mode></app-dark-mode>
-            <div class="relative flex items-center justify-center">
-                <div
-                    class="absolute bottom-[110%] left-0 right-0 rounded-xl bg-green-100 dark:bg-green-950 flex items-center justify-center gap-2">
-                    <span class="text-[20px]" role="button" (click)="sendReaction('😂')">😂</span>
-                    <span class="text-[20px]" role="button" (click)="sendReaction('😍')">😍</span>
-                    <span class="text-[20px]" role="button" (click)="sendReaction('👏')">👏</span>
-                    <span class="text-[20px]" role="button" (click)="sendReaction('👍')">👍</span>
-                    <span class="text-[20px]" role="button" (click)="sendReaction('🔥')">🔥</span>
-                    <span class="text-[20px]" role="button" (click)="sendReaction('🎉')">🎉</span>
-                    <span class="text-[20px]" role="button" (click)="sendReaction('👋')">👋</span>
-                    <span class="text-[20px]" role="button" (click)="sendReaction('🙌')">🙌</span>
-                    <span class="text-[20px]" role="button" (click)="sendReaction('🤩')">🤩</span>
-                    <span class="text-[20px]" role="button" (click)="sendReaction('🤔')">🤔</span>
-                    <span class="text-[20px]" role="button" (click)="sendReaction('🤗')">🤗</span>
-                    <span class="text-[20px]" role="button" (click)="sendReaction('🤭')">🤭</span>
+            <div class="relative flex items-center justify-center text-[30px]">
+                <div *ngIf="show_reactions"
+                    class="absolute w-auto whitespace-nowrap px-2 table bottom-[110%] left-[50%] transform translate-x-[-50%] shadow-xl rounded-xl bg-green-100 dark:bg-green-950">
+                    <span class="inline" role="button" (click)="sendReaction('😂')">😂</span>
+                    <span class="inline" role="button" (click)="sendReaction('😍')">😍</span>
+                    <span class="inline" role="button" (click)="sendReaction('👏')">👏</span>
+                    <span class="inline" role="button" (click)="sendReaction('👍')">👍</span>
+                    <span class="inline" role="button" (click)="sendReaction('🔥')">🔥</span>
+                    <span class="inline" role="button" (click)="sendReaction('🎉')">🎉</span>
+                    <span class="inline" role="button" (click)="sendReaction('👋')">👋</span>
+                    <span class="inline" role="button" (click)="sendReaction('🙌')">🙌</span>
+                    <span class="inline" role="button" (click)="sendReaction('🤩')">🤩</span>
+                    <span class="inline" role="button" (click)="sendReaction('🤔')">🤔</span>
+                    <span class="inline" role="button" (click)="sendReaction('🤗')">🤗</span>
+                    <span class="inline" role="button" (click)="sendReaction('🤭')">🤭</span>
                 </div>
-                <button>React</button>
+                <button (click)="show_reactions = !show_reactions">😂</button>
             </div>
-            <button (click)="toggleAudio()">Mute</button>
-            <button (click)="toggleVideo()">Camera</button>
-            <button (click)="show_sidechat = !show_sidechat">Information</button>
+            <div class="bg-slate-600 p-1 rounded-xl relative flex items-center justify-center">
+                <div *ngIf="show_audio_devices"
+                    class="overflow-hidden absolute w-auto whitespace-nowrap flex flex-col items-start justify-start bottom-[110%] left-[50%] transform translate-x-[-50%] shadow-xl rounded-xl bg-green-100 dark:bg-green-950">
+                    <span *ngFor="let device of audio_devices" class="w-full p-2 hover:bg-green-300" role="button"
+                        (click)="selected_audio_device_id = device.deviceId; updateMediaStream()">{{ device.label
+                        }}</span>
+                </div>
+                <span (click)="show_audio_devices = !show_audio_devices" role="button"
+                    class="material-symbols-outlined text-dark dark:text-secondary">{{show_audio_devices ?
+                    'keyboard_arrow_up':'keyboard_arrow_down'}}</span>
+                <button
+                    class="{{is_muted ? 'bg-red-400':'bg-slate-500'}} rounded-xl px-2 py-1 text-slate-50 material-symbols-outlined"
+                    (click)="toggleAudio()">mic</button>
+            </div>
+            <div class="bg-slate-600 p-1 rounded-xl relative flex items-center justify-center">
+                <div *ngIf="show_video_devices"
+                    class="overflow-hidden absolute w-auto whitespace-nowrap flex flex-col items-start justify-start bottom-[110%] left-[50%] transform translate-x-[-50%] shadow-xl rounded-xl bg-green-100 dark:bg-green-950">
+                    <span *ngFor="let device of video_devices" class="w-full p-2 hover:bg-green-300" role="button"
+                        (click)="selected_video_device_id = device.deviceId; updateMediaStream()">{{ device.label
+                        }}</span>
+                </div>
+                <span (click)="show_video_devices = !show_video_devices" role="button"
+                    class="material-symbols-outlined text-dark dark:text-secondary">{{show_video_devices ?
+                    'keyboard_arrow_up':'keyboard_arrow_down'}}</span>
+                <button
+                    class="{{is_video_on ? 'bg-slate-500':'bg-red-400'}} rounded-xl px-2 py-1 text-slate-50 material-symbols-outlined"
+                    (click)="toggleVideo()">camera</button>
+            </div>
+            <button
+                class="{{show_sidechat ? 'bg-red-400':'bg-slate-500'}} rounded-xl px-3 py-2 text-slate-50 material-symbols-outlined"
+                (click)="show_sidechat = !show_sidechat">info</button>
         </div>
     </div>
     <div *ngIf="show_sidechat"
-        class="h-screen w-[500px] bg-transparent dark:bg-slate-950 p-3 flex flex-col gap-3 items-start justify-start">
-        <div class="h-[70px] flex w-full gap-2 items-center justify-center p-2">
+        class="h-screen w-[500px] bg-transparent dark:bg-slate-950 p-3 flex flex-col items-start justify-start">
+        <div class="max-h-[70px] flex w-full gap-2 items-center justify-center p-2">
             <div role="button" (click)="toggleSidechatTabs('chat')"
                 class="shadow-lg flex-grow rounded-xl text-center px-3 py-2 bg-slate-300 dark:bg-slate-950 text-slate-950 dark:text-slate-200">
                 Chat
@@ -66,15 +104,15 @@
         </div>
         <div *ngIf="side_chat_tag == 'chat'"
             class="w-full flex flex-col justify-start items-start flex-grow relative gap-2">
-            <div class="rounded-lg shadow-lg h-[calc(100vh-200px)] w-full">
+            <div class="rounded-lg shadow-xl bg-white dark:bg-black p-2 self-stretch flex-grow w-full">
                 <div *ngFor="let msg of messages" class="flex justify-start items-start self-stretch  ">
                     {{ msg.user_id }}: {{ msg.message }}
                 </div>
             </div>
-            <div class="rounded-lg shadow-lg h-[70px] w-full flex items-center justify-center">
+            <div class="rounded-lg shadow-lg bg-white dark:bg-black h-[70px] w-full flex items-center justify-center">
                 <span class="text-[20px]">😂</span>
-                <input class="p-2 bg-transparent text-dark dark:text-white flex-grow" type="text"
-                    [(ngModel)]="chat_message" placeholder="Type a message"
+                <input class="p-2 bg-transparent text-dark dark:text-white flex-grow outline-none focus:outline-none"
+                    type="text" [(ngModel)]="chat_message" placeholder="Type a message"
                     (keyup.enter)="sendMessage(chat_message); chat_message = ''" />
                 <span (click)="sendMessage(chat_message); chat_message = ''"
                     class="text-[20px] material-symbols-outlined" role="button">send</span>
@@ -82,7 +120,7 @@
         </div>
         <div *ngIf="side_chat_tag == 'details'"
             class="rounded-lg shadow-lg w-full flex flex-col justify-start items-start flex-grow relative gap-2">
-            Room: {{room_name}}
+            {{base_url}}/lobby/{{room_name}}
         </div>
         <div *ngIf="side_chat_tag == 'participants'"
             class="rounded-lg shadow-lg w-full flex flex-col justify-start items-start flex-grow relative gap-2">

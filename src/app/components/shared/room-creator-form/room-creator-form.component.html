@@ -1,5 +1,6 @@
 <form [formGroup]="roomForm" (ngSubmit)="onSubmit()" class="w-full flex flex-wrap gap-3 items-start justify-start">
 
+    {{rooms|json}}
     <div>
         <!-- Tags input -->
         <div class="flex items-center justify-start rounded-xl border border-slate-400 dark:border-green-700 p-2 gap-3">
@@ -37,3 +38,5 @@
     </div>
 
 </form>
+<div *ngIf="searching_for_rooms"
+    class="fixed top-0 left-0 right-0 bottom-0 w-screen h-screen bg-green-300 dark:bg-green-950 overflow-hidden"></div>
