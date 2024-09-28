@@ -2,7 +2,7 @@ import { Profile } from '../user/profile';
 
 export interface Room {
   room_id: string;
-  room_name: string;
+  name: string;
   room_description: string;
   room_creator: Profile;
   room_created: Date;

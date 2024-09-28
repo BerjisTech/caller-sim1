@@ -48,7 +48,7 @@ export class RoomComponent
   public data_channels: { [socket_id: string]: RTCDataChannel } = {};
   public user_id: string = Math.random().toString(36).substring(2, 15);
   public room!: Room;
-  public room_name: string = '';
+  public name: string = '';
   public room_error: string = '';
   public is_muted = false;
   public is_video_on = true;
@@ -93,8 +93,8 @@ export class RoomComponent
   ) {
     this.activatedRoute.params.subscribe({
       next: (params) => {
-        // Get :room_id
-        this.room_name = params['room_id'];
+        // Get :name
+        this.name = params['name'];
       },
     });
   }
@@ -108,7 +108,7 @@ export class RoomComponent
         this.user_id = this.user.user_id;
 
         await this.joinRoom().then(() => {
-          console.log('Joined room:', this.room_name);
+          console.log('Joined room:', this.name);
         });
 
         this.local_video = document.getElementById(
@@ -235,7 +235,7 @@ export class RoomComponent
 
   async joinRoom() {
     this.is_initiator = true; // New user
-    this.signalingService.joinRoom(this.room_name, this.user_id);
+    this.signalingService.joinRoom(this.name, this.user_id);
 
     try {
       this.is_in_call = true;
@@ -258,7 +258,7 @@ export class RoomComponent
   }
 
   async createRoom() {
-    this.signalingService.createRoom(this.room_name, this.user_id);
+    this.signalingService.createRoom(this.name, this.user_id);
     this.joinRoom();
   }
 
@@ -546,7 +546,7 @@ export class RoomComponent
     }
 
     // Leave the room
-    this.signalingService.leaveRoom(this.room_name, this.user_id);
+    this.signalingService.leaveRoom(this.name, this.user_id);
     this.is_in_call = false;
   }
 

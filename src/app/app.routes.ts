@@ -12,7 +12,7 @@ export const routes: Routes = [
       component: RoomCreatorComponent,
     },
     {
-      path: 'lobby/:room_id',
+      path: 'lobby/:name',
       component: RoomComponent,
     },
 ];

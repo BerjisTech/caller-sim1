@@ -14,6 +14,9 @@ import {
 } from '../../../constants/constants';
 import { CallManagementService } from '../../../services/call/call-management.service';
 import { Room } from '../../../interfaces/call/room';
+import { SignalingService } from '../../../services/realtime/signaling.service';
+import { Profile } from '../../../interfaces/user/profile';
+import { faker } from '@faker-js/faker';
 
 @Component({
   selector: 'app-room-creator-form',
@@ -26,19 +29,32 @@ export class RoomCreatorFormComponent implements OnInit {
   public rooms: Room[] = [];
   public searching_for_rooms: boolean = false;
   public roomForm: FormGroup;
-  public room_id: string = '';
+  public name: string = '';
   public tags!: string;
   public tags_array: string[] = [];
   public sugested_tags: string[] = SUGGESTED_TAGS;
+  public profile: Profile = {
+    user_id: Math.random().toString(36).substring(7),
+    is_anonymous: true,
+    is_authenticated: false,
+    is_superuser: false,
+    is_staff: false,
+    username: faker.internet.userName(),
+    email: faker.internet.email(),
+    first_name: faker.person.firstName(),
+    last_name: faker.person.lastName(),
+    full_name: faker.person.fullName(),
+    avatar: faker.image.avatar(),
+  };
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private callManagement: CallManagementService
+    private callManagement: CallManagementService,
+    private signalingService: SignalingService
   ) {
     this.roomForm = this.fb.group({
-      room_id: [this.generateRoomId()], // Optional field for the room ID
-      room_name: [''], // Optional field for the room name
+      name: [this.generateRoomId()], // Optional field for the room ID
       seats: [2, [Validators.required, Validators.min(1)]], // Seats required, at least 1
       is_private: [false], // Default to public
       password: [''], // Optional password for private rooms
@@ -46,37 +62,39 @@ export class RoomCreatorFormComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
-    this.room_id = this.generateRoomId();
+  async ngOnInit() {
+    this.name = this.generateRoomId();
+    await this.callManagement.getProfile('12345').then((profile) => {
+      if (profile) {
+        this.profile = profile;
+        this.profile.is_anonymous = false;
+        this.profile.is_authenticated = true;
+        this.profile.is_superuser = true;
+        this.profile.is_staff = true;
+      }
+    });
   }
 
-  async onSubmit() {
+  async joinRoom(event: Event) {
+    event.preventDefault();
     this.searching_for_rooms = true;
     if (this.roomForm.valid) {
-      // this.createRoom()
-      //   .then(() => {
-      //     const roomData = this.roomForm.value;
-      //     this.router.navigate(['/lobby', roomData.room_id]);
-      //   })
-      //   .catch((error) => {
-      //     console.error('Error creating room:', error);
-      //   });
       await this.callManagement
         .searchRoomsByTags(this.tags_array)
         .then((rooms) => {
-          console.log('Rooms found:', rooms);
           this.rooms = rooms;
-          this.searching_for_rooms = false;
 
           // if room count is not 0 join random room otherwise create room with room name
           if (this.rooms.length > 0) {
-            // this.router.navigate(['/lobby', this.rooms[0].room_id]);
+            // Join random room
+            let room =
+              this.rooms[Math.floor(Math.random() * this.rooms.length)];
+            this.router.navigate(['/lobby', room.name]);
           } else {
-            this.createRoom().then(() => {
-              const roomData = this.roomForm.value;
-              // this.router.navigate(['/lobby', roomData.room_id]);
-            });
+            this.hostRoom(event);
           }
+
+          this.searching_for_rooms = false;
         })
         .catch((error) => {
           console.error('Error searching for rooms:', error);
@@ -84,17 +102,30 @@ export class RoomCreatorFormComponent implements OnInit {
           // create room if no rooms found
           this.createRoom().then(() => {
             const roomData = this.roomForm.value;
-            // this.router.navigate(['/lobby', roomData.room_id]);
+            this.router.navigate(['/lobby', roomData.name]);
           });
         });
+    }
+  }
+
+  async hostRoom(event: Event) {
+    event.preventDefault();
+    if (this.roomForm.valid) {
+      await this.createRoom().then(() => {
+        const roomData = this.roomForm.value;
+        this.router.navigate(['/lobby', roomData.name]);
+      });
     }
   }
 
   async createRoom() {
     if (this.roomForm.valid) {
       const roomData = this.roomForm.value;
-      // Handle room creation logic here
-      // console.log('Room created:', roomData);
+      // Pass the tags_array directly, which will contain the tags in array form
+      roomData.tags = this.tags_array.length > 0 ? this.tags_array : [''];
+      await this.callManagement.createRoom(roomData, this.profile).then(() => {
+        this.signalingService.createRoom(roomData.name, this.profile.user_id);
+      });
     }
   }
 

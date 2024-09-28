@@ -6,8 +6,8 @@
         <div class="flex flex-col items-center justify-center h-full w-full" role="button">
             <p class="text-[50px]">You're in the room alone</p>
             <p class="text-[30px]">Share this link to invite others while we get you random peers</p>
-            <p class="text-[20px]" role="button" (click)="copyContent(base_url+'/lobby/'+room_name)">
-                {{base_url}}/lobby/{{room_name}}</p>
+            <p class="text-[20px]" role="button" (click)="copyContent(base_url+'/lobby/'+name)">
+                {{base_url}}/lobby/{{name}}</p>
         </div>
     </div>
     <div
@@ -125,7 +125,7 @@
         </div>
         <div *ngIf="side_chat_tag == 'details'"
             class="rounded-lg shadow-lg w-full flex flex-col justify-start items-start flex-grow relative gap-2">
-            {{base_url}}/lobby/{{room_name}}
+            {{base_url}}/lobby/{{name}}
         </div>
         <div *ngIf="side_chat_tag == 'participants'"
             class="rounded-lg shadow-lg w-full flex flex-col justify-start items-start flex-grow relative gap-2">
