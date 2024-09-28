@@ -105,8 +105,13 @@
         <div *ngIf="side_chat_tag == 'chat'"
             class="w-full flex flex-col justify-start items-start flex-grow relative gap-2">
             <div class="rounded-lg shadow-xl bg-white dark:bg-black p-2 self-stretch flex-grow w-full">
-                <div *ngFor="let msg of messages" class="flex justify-start items-start self-stretch  ">
-                    {{ msg.user_id }}: {{ msg.message }}
+                <div *ngFor="let msg of messages" class="w-full">
+                    <div
+                        class="w-full self-stretch flex gap-2 {{ user_id == msg.user_id ? 'flex-row-reverse items-start justify-end' : 'flex-row items-end justify-start'}}">
+                        <div class="{{user_id == msg.user_id?'text-right':'text-left'}}">{{ msg.user_id }}</div>
+                        <div class="{{user_id == msg.user_id?'text-right':'text-left'}} flex-grow">{{ msg.message }}
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="rounded-lg shadow-lg bg-white dark:bg-black h-[70px] w-full flex items-center justify-center">
