@@ -70,11 +70,11 @@ export class RoomCreatorFormComponent implements OnInit {
 
           // if room count is not 0 join random room otherwise create room with room name
           if (this.rooms.length > 0) {
-            this.router.navigate(['/lobby', this.rooms[0].room_id]);
+            // this.router.navigate(['/lobby', this.rooms[0].room_id]);
           } else {
             this.createRoom().then(() => {
               const roomData = this.roomForm.value;
-              this.router.navigate(['/lobby', roomData.room_id]);
+              // this.router.navigate(['/lobby', roomData.room_id]);
             });
           }
         })
@@ -84,7 +84,7 @@ export class RoomCreatorFormComponent implements OnInit {
           // create room if no rooms found
           this.createRoom().then(() => {
             const roomData = this.roomForm.value;
-            this.router.navigate(['/lobby', roomData.room_id]);
+            // this.router.navigate(['/lobby', roomData.room_id]);
           });
         });
     }
@@ -150,8 +150,12 @@ export class RoomCreatorFormComponent implements OnInit {
       this.tags_array.push(tag);
       this.tags = this.tags_array.join(',');
     }
-    this.sugested_tags = SUB_TAGS_FROM_SUGGESTED_TAGS[tag]
-      .split(',')
-      .map((t) => t.trim());
+    if (SUB_TAGS_FROM_SUGGESTED_TAGS[tag]) {
+      this.sugested_tags = SUB_TAGS_FROM_SUGGESTED_TAGS[tag]
+        .split(',')
+        .map((t) => t.trim());
+    } else {
+      this.sugested_tags = SUGGESTED_TAGS;
+    }
   }
 }

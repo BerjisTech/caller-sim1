@@ -2,15 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { Room } from '../../interfaces/call/room';
+import { Profile } from '../../interfaces/user/profile';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CallManagementService {
-
-  constructor(
-    private http: HttpClient
-  ) { }
+  constructor(private http: HttpClient) {}
 
   async getActiveRooms(): Promise<Room[]> {
     const base_url = window.location.origin;
@@ -23,8 +21,20 @@ export class CallManagementService {
   async searchRoomsByTags(tags: string[]): Promise<Room[]> {
     const base_url = window.location.origin;
     const active_rooms: Room[] = await firstValueFrom(
-      this.http.post<Room[]>(`${base_url}/api/rooms/tags`, { tags })
+      this.http.get<Room[]>(`${base_url}/api/rooms/tags`, {
+        params: {
+          tags: tags.join(','),
+        },
+      })
     );
     return active_rooms;
+  }
+
+  async createRoom(room_data: Room, room_host: Profile): Promise<Room> {
+    const base_url = window.location.origin;
+    const new_room: Room = await firstValueFrom(
+      this.http.post<Room>(`${base_url}/api/rooms`, {room_data, room_host})
+    );
+    return new_room;
   }
 }
