@@ -59,4 +59,12 @@ export class CallManagementService {
     );
     return new_room;
   }
+
+  async getRoom(name: string): Promise<Room> {
+    const base_url = window.location.origin;
+    const room: Room = await firstValueFrom(
+      this.http.get<Room>(`${base_url}/api/rooms/${name}`)
+    );
+    return room;
+  }
 }

@@ -87,7 +87,7 @@
         </div>
     </div>
     <div *ngIf="show_sidechat"
-        class="h-screen w-[500px] bg-transparent dark:bg-slate-950 p-3 flex flex-col items-start justify-start">
+        class="z-[600000] h-screen w-[500px] bg-green-50 dark:bg-slate-950 p-3 flex flex-col items-start justify-start">
         <div class="max-h-[70px] flex w-full gap-2 items-center justify-center p-2">
             <div role="button" (click)="toggleSidechatTabs('chat')"
                 class="shadow-lg flex-grow rounded-xl text-center px-3 py-2 bg-slate-300 dark:bg-slate-950 text-slate-950 dark:text-slate-200">
@@ -126,6 +126,11 @@
         <div *ngIf="side_chat_tag == 'details'"
             class="rounded-lg shadow-lg w-full flex flex-col justify-start items-start flex-grow relative gap-2">
             {{base_url}}/lobby/{{name}}
+            <pre>
+                <code>
+                    {{room|json}}
+                </code>
+            </pre>
         </div>
         <div *ngIf="side_chat_tag == 'participants'"
             class="rounded-lg shadow-lg w-full flex flex-col justify-start items-start flex-grow relative gap-2">

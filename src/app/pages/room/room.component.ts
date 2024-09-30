@@ -18,6 +18,7 @@ import { SharedModule } from '../../modules/shared/shared.module';
 import { ActivatedRoute } from '@angular/router';
 import { Room } from '../../interfaces/call/room';
 import { ContentService } from '../../services/content/content.service';
+import { CallManagementService } from '../../services/call/call-management.service';
 
 @Component({
   selector: 'app-room',
@@ -89,7 +90,8 @@ export class RoomComponent
     private zone: NgZone,
     private notificationService: NotificationService,
     private activatedRoute: ActivatedRoute,
-    private contentService: ContentService
+    private contentService: ContentService,
+    private callManagement: CallManagementService
   ) {
     this.activatedRoute.params.subscribe({
       next: (params) => {
@@ -99,31 +101,36 @@ export class RoomComponent
     });
   }
 
-  public copyContent = (content: string) => this.contentService.copyContent(content);
+  public copyContent = (content: string) =>
+    this.contentService.copyContent(content);
 
   async ngOnInit() {
     await this.profileService.getUser().then(async (user) => {
       if (user) {
         this.user = user;
         this.user_id = this.user.user_id;
-
-        await this.joinRoom().then(() => {
-          console.log('Joined room:', this.name);
-        });
-
-        this.local_video = document.getElementById(
-          'local_video'
-        ) as HTMLVideoElement;
-        if (this.local_video) {
-          this.local_video.muted = true;
-        }
-        if (!this.handlersSetUp) {
-          this.setupSignalingHandlers();
-          this.handlersSetUp = true;
-        }
-        this.listDevices();
-        this.updateVideoSizes();
       }
+    });
+
+    await this.callManagement.getRoom(this.name).then(async (room) => {
+      this.room = room;
+
+      await this.joinRoom().then(() => {
+        console.log('Joined room:', this.name);
+      });
+
+      this.local_video = document.getElementById(
+        'local_video'
+      ) as HTMLVideoElement;
+      if (this.local_video) {
+        this.local_video.muted = true;
+      }
+      if (!this.handlersSetUp) {
+        this.setupSignalingHandlers();
+        this.handlersSetUp = true;
+      }
+      this.listDevices();
+      this.updateVideoSizes();
     });
   }
 

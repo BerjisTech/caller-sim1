@@ -15,7 +15,7 @@ import {
 import { CallManagementService } from '../../../services/call/call-management.service';
 import { Room } from '../../../interfaces/call/room';
 import { SignalingService } from '../../../services/realtime/signaling.service';
-import { Profile } from '../../../interfaces/user/profile';
+import { defaultProfile, Profile } from '../../../interfaces/user/profile';
 import { faker } from '@faker-js/faker';
 
 @Component({
@@ -33,19 +33,8 @@ export class RoomCreatorFormComponent implements OnInit {
   public tags!: string;
   public tags_array: string[] = [];
   public sugested_tags: string[] = SUGGESTED_TAGS;
-  public profile: Profile = {
-    user_id: Math.random().toString(36).substring(7),
-    is_anonymous: true,
-    is_authenticated: false,
-    is_superuser: false,
-    is_staff: false,
-    username: faker.internet.userName(),
-    email: faker.internet.email(),
-    first_name: faker.person.firstName(),
-    last_name: faker.person.lastName(),
-    full_name: faker.person.fullName(),
-    avatar: faker.image.avatar(),
-  };
+  public profile: Profile = defaultProfile;
+  public hardwareConcurrency = navigator.hardwareConcurrency || 'unknown';
 
   constructor(
     private fb: FormBuilder,
@@ -64,7 +53,7 @@ export class RoomCreatorFormComponent implements OnInit {
 
   async ngOnInit() {
     this.name = this.generateRoomId();
-    await this.callManagement.getProfile('12345').then((profile) => {
+    await this.callManagement.getProfile(this.profile.user_id).then((profile) => {
       if (profile) {
         this.profile = profile;
         this.profile.is_anonymous = false;
@@ -100,10 +89,7 @@ export class RoomCreatorFormComponent implements OnInit {
           console.error('Error searching for rooms:', error);
           this.searching_for_rooms = false;
           // create room if no rooms found
-          this.createRoom().then(() => {
-            const roomData = this.roomForm.value;
-            this.router.navigate(['/lobby', roomData.name]);
-          });
+          this.createRoom();
         });
     }
   }
@@ -111,10 +97,7 @@ export class RoomCreatorFormComponent implements OnInit {
   async hostRoom(event: Event) {
     event.preventDefault();
     if (this.roomForm.valid) {
-      await this.createRoom().then(() => {
-        const roomData = this.roomForm.value;
-        this.router.navigate(['/lobby', roomData.name]);
-      });
+      await this.createRoom();
     }
   }
 
@@ -123,9 +106,13 @@ export class RoomCreatorFormComponent implements OnInit {
       const roomData = this.roomForm.value;
       // Pass the tags_array directly, which will contain the tags in array form
       roomData.tags = this.tags_array.length > 0 ? this.tags_array : [''];
-      await this.callManagement.createRoom(roomData, this.profile).then(() => {
-        this.signalingService.createRoom(roomData.name, this.profile.user_id);
-      });
+      roomData.active = true;
+      await this.callManagement
+        .createRoom(roomData, this.profile)
+        .then((room) => {
+          this.signalingService.createRoom(room.id, this.profile.user_id);
+          this.router.navigate(['/lobby', room.name]);
+        });
     }
   }
 
