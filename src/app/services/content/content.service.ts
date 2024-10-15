@@ -12,9 +12,16 @@ export class ContentService {
 
   setDarkMode(value: boolean) {
     this.darkModeSubsject.next(value);
+    // Save to local storage
+    localStorage.setItem('darkMode', value ? 'true' : 'false');
   }
 
   getDarkMode() {
+    // Check local storage
+    const darkMode = localStorage.getItem('darkMode');
+    if (darkMode) {
+      this.darkModeSubsject.next(darkMode === 'true');
+    }
     return this.darkModeSubsject.value;
   }
 
