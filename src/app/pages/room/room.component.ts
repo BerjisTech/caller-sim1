@@ -15,7 +15,7 @@ import { SignalingService } from '../../services/realtime/signaling.service';
 import { ProfileService } from '../../services/user/profile.service';
 import { NotificationService } from '../../services/notifications/notification.service';
 import { SharedModule } from '../../modules/shared/shared.module';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Room } from '../../interfaces/call/room';
 import { ContentService } from '../../services/content/content.service';
 import { CallManagementService } from '../../services/call/call-management.service';
@@ -91,7 +91,8 @@ export class RoomComponent
     private notificationService: NotificationService,
     private activatedRoute: ActivatedRoute,
     private contentService: ContentService,
-    private callManagement: CallManagementService
+    private callManagement: CallManagementService,
+    private router: Router
   ) {
     this.activatedRoute.params.subscribe({
       next: (params) => {
@@ -555,6 +556,15 @@ export class RoomComponent
     // Leave the room
     this.signalingService.leaveRoom(this.name, this.user_id);
     this.is_in_call = false;
+
+    // Reset variables
+    this.remote_streams = [];
+    this.connected_users = [];
+    this.is_admin = false;
+    this.is_initiator = false;
+
+    // Redirect to home
+    this.router.navigate(['/']);
   }
 
   toggleSidechatTabs(active_tab: string) {
