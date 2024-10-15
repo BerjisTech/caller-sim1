@@ -84,6 +84,9 @@
             <button
                 class="{{show_sidechat ? 'bg-red-400':'bg-slate-500'}} rounded-xl px-3 py-2 text-slate-50 material-symbols-outlined"
                 (click)="show_sidechat = !show_sidechat">info</button>
+            <button
+                class="bg-red-400 rounded-xl px-3 py-2 text-slate-50 material-symbols-outlined"
+                (click)="hangUp()">call_end</button>
         </div>
     </div>
     <div *ngIf="show_sidechat"
@@ -108,7 +111,7 @@
                 <div *ngFor="let msg of messages" class="w-full">
                     <div
                         class="w-full self-stretch flex gap-2 {{ user_id == msg.user_id ? 'flex-row-reverse items-start justify-end' : 'flex-row items-end justify-start'}}">
-                        <div class="{{user_id == msg.user_id?'text-right':'text-left'}}">{{ msg.user_id }}</div>
+                        <div *ngIf="!(user_id === msg.user_id)" class="'text-left">{{ msg.user_id }}</div>
                         <div class="{{user_id == msg.user_id?'text-right':'text-left'}} flex-grow">{{ msg.message }}
                         </div>
                     </div>
