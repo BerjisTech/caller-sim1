@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ContentService } from '../../../services/content/content.service';
 
@@ -9,7 +9,7 @@ import { ContentService } from '../../../services/content/content.service';
   templateUrl: './dark-mode.component.html',
   styleUrl: './dark-mode.component.scss',
 })
-export class DarkModeComponent {
+export class DarkModeComponent implements OnInit {
   public dark_mode: boolean = false;
 
   public darkModeSubscription!: Subscription;
@@ -24,6 +24,10 @@ export class DarkModeComponent {
         }
       },
     });
+  }
+
+  ngOnInit(): void {
+    this.toggleDarkMode();
   }
 
   toggleDarkMode() {
