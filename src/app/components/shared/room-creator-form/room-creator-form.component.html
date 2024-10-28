@@ -8,10 +8,10 @@
                 <div class="gap-2 flex flex-col lg:flex-row items-start lg:items-center justify-start">
                     <input (input)="updateTags()" id="tags" type="text" formControlName="tags" [(ngModel)]="tags"
                         name="tags"
-                        class="text-slate-950 dark:text-slate-200 w-[50px] p-2 bg-transparent outline-none focus:outline-none font-semibold text-left min-w-[300px] flex-grow"
+                        class="text-slate-950 dark:text-slate-200 w-[50px] p-2 bg-transparent outline-none focus:outline-none font-semibold text-left flex-grow"
                         placeholder="What are your interests">
                     <button (click)="joinRoom($event)"
-                        class="bg-green-950 px-3 py-2 font-semibold text-white rounded-lg w-full lg:w-auto flex-grow lg:flex-grow-0">
+                        class="bg-green-950 px-3 py-2 font-semibold text-white rounded-lg w-full lg:w-auto flex-grow lg:flex-grow-0 whitespace-nowrap">
                         Join Random
                     </button>
                     <button (click)="hostRoom($event)"
