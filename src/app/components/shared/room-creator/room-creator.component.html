@@ -1,4 +1,4 @@
-<div class="bg-green-100 dark:bg-slate-950 min-w-full min-h-screen flex flex-col items-center justify-between p-4">
+<div class="bg-green-100 dark:bg-slate-950 flex flex-col items-center justify-between p-4 fixed top-0 right-0 left-0 bottom-0 h-screen w-screen">
     <nav class="flex items-center justify-center gap-3">
         <a href="/"
             class="font-semibold text-slate-950 hover:text-slate-500 dark:text-slate-300 dark:hover:text-slate-600 text-[20px]">Home</a>
@@ -7,26 +7,26 @@
         <a href="/"
             class="font-semibold text-slate-950 hover:text-slate-500 dark:text-slate-300 dark:hover:text-slate-600 text-[20px]">FaQ</a>
     </nav>
-    <div class="relative flex flex-col items-center justify-center">
-        <p class="text-green-950 dark:text-green-800 w-[500px] text-[90px] text-center font-black">
+    <div class="w-auto lg:w-[600px] relative flex flex-col items-center justify-center">
+        <p class="text-green-950 dark:text-green-800 w-[500px] text-2xl lg:text-[90px] text-center font-black">
             CONNECT
         </p>
-        <p class="text-green-950 dark:text-green-800 w-[500px] text-[70px] text-center font-black">
+        <p class="text-green-950 dark:text-green-800 w-[500px] text-2xl lg:text-[70px] text-center font-black my-auto lg:my-10">
             WITH PEERS
         </p>
-        <div>
+        <div class="text-green-950 dark:text-green-200">
             One on one with like minded smegheads
         </div>
         <!-- Left -->
-        <div class="bg-red-300 rounded-full h-[120px] w-[120px] absolute top-[-70px] left-[50px]"></div>
+        <div class="bg-red-300 rounded-full h-[120px] w-[120px] absolute top-[-120px] left-[50px]"></div>
         <div class="bg-red-300 rounded-full h-[70px] w-[70px] absolute top-[90px] left-[-30px]"></div>
         <div class="bg-red-300 rounded-full h-[100px] w-[100px] absolute top-[200px] left-[-50px]"></div>
         <!-- Right -->
-        <div class="bg-red-300 rounded-full h-[80px] w-[80px] absolute top-[-40px] right-[50px]"></div>
+        <div class="bg-red-300 rounded-full h-[80px] w-[80px] absolute top-[-40px] right-[30px]"></div>
         <div class="bg-red-300 rounded-full h-[100px] w-[100px] absolute top-[70px] right-[-50px]"></div>
         <div class="bg-red-300 rounded-full h-[50px] w-[50px] absolute top-[200px] right-[0px]"></div>
-        <div>
-            <app-room-creator-form></app-room-creator-form>
+        <div class="w-[70vw] lg:w-[500px]">
+            <app-room-creator-form class="w-[70vw] lg:w-[500px]"></app-room-creator-form>
         </div>
     </div>
     <app-dark-mode></app-dark-mode>

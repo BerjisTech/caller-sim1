@@ -1,21 +1,21 @@
-<form [formGroup]="roomForm" class="w-full flex flex-wrap gap-3 items-start justify-start">
+<form [formGroup]="roomForm" class="w-auto lg:w-full">
     <div>
         <!-- Tags input -->
-        <div class="flex items-center justify-start rounded-xl border border-slate-400 dark:border-green-700 p-2 gap-3">
-            <div class="h-full relative flex items-center justify-center">
+        <div class="rounded-xl border border-slate-400 dark:border-green-700 p-2 gap-3">
+            <div class="h-full relative">
                 <label for="tags"
                     class="absolute top-[100%] shadow-md rounded-md backdrop-blur-md px-4 text-slate-950 dark:text-slate-200">Tags:</label>
-                <div class="gap-2 flex items-center justify-start">
+                <div class="gap-2 flex flex-col lg:flex-row items-start lg:items-center justify-start">
                     <input (input)="updateTags()" id="tags" type="text" formControlName="tags" [(ngModel)]="tags"
                         name="tags"
                         class="text-slate-950 dark:text-slate-200 w-[50px] p-2 bg-transparent outline-none focus:outline-none font-semibold text-left min-w-[300px] flex-grow"
                         placeholder="What are your interests">
                     <button (click)="joinRoom($event)"
-                        class="bg-green-950 px-3 py-2 font-semibold text-white rounded-lg">
+                        class="bg-green-950 px-3 py-2 font-semibold text-white rounded-lg w-full lg:w-auto flex-grow lg:flex-grow-0">
                         Join Random
                     </button>
                     <button (click)="hostRoom($event)"
-                        class="bg-green-950 px-3 py-2 font-semibold text-white rounded-lg">
+                        class="bg-green-950 px-3 py-2 font-semibold text-white rounded-lg w-full lg:w-auto flex-grow lg:flex-grow-0">
                         Host
                     </button>
                 </div>
@@ -34,7 +34,7 @@
 
         <div>
             <p>These may interest you</p>
-            <div class="flex flex-wrap items-center justify-center gap-3 mt-4 w-[500px]">
+            <div class="flex flex-wrap items-center justify-center gap-3 mt-4 w-auto lg:w-[500px]">
                 <div *ngFor="let tag of sugested_tags" role="button" (click)="addSuggestedTag(tag)"
                     class="text-slate-700 bg-green-300 rounded-lg px-3 flex items-center justify-center">
                     {{tag}}
