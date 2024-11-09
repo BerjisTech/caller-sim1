@@ -235,9 +235,9 @@ export class RoomComponent
     });
 
     // Handle room errors
-    this.signalingService.onRoomJoinError().subscribe((error) => {
+    this.signalingService.onRoomJoinError().subscribe(async (error) => {
       this.room_error = error;
-      this.createRoom();
+      await this.createRoom();
     });
   }
 
@@ -248,26 +248,34 @@ export class RoomComponent
     try {
       this.is_in_call = true;
       const constraints = {
-        audio: { deviceId: this.selected_audio_device_id },
-        video: { deviceId: this.selected_video_device_id },
+        audio: { deviceId: this.selected_audio_device_id || undefined },
+        video: { deviceId: this.selected_video_device_id || undefined },
       };
       this.local_stream = await navigator.mediaDevices.getUserMedia(
         constraints
       );
-      // this.local_video.srcObject = this.local_stream;
-    } catch (error) {
+    } catch (error: any) {
       this.is_in_call = false;
-      this.notificationService.notify(
-        'Error accessing media devices. Please check your settings and try again.',
-        'error'
-      );
-      console.error('Error accessing media devices.', error);
+      let errorMessage =
+        'Error accessing media devices. Please check your settings and try again.';
+      if (error.name === 'NotAllowedError') {
+        errorMessage =
+          'Permission to access media devices was denied. Please allow access and try again.';
+      } else if (error.name === 'NotFoundError') {
+        errorMessage =
+          'No media devices found. Please connect a microphone and/or camera and try again.';
+      } else if (error.name === 'NotReadableError') {
+        errorMessage =
+          'Media device is currently in use by another application. Please close other applications and try again.';
+      }
+      this.notificationService.notify(errorMessage, 'error');
+      console.error('Error accessing media devices:', error);
     }
   }
 
   async createRoom() {
     this.signalingService.createRoom(this.name, this.user_id);
-    this.joinRoom();
+    await this.joinRoom();
   }
 
   async createPeerConnection(socket_id: string): Promise<RTCPeerConnection> {
