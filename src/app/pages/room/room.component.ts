@@ -241,7 +241,7 @@ export class RoomComponent
     });
   }
 
-  async joinRoom() {
+  async joinRoom(retryCount = 3) {
     this.is_initiator = true; // New user
     this.signalingService.joinRoom(this.name, this.user_id);
 
@@ -270,6 +270,17 @@ export class RoomComponent
       }
       this.notificationService.notify(errorMessage, 'error');
       console.error('Error accessing media devices:', error);
+
+      // Retry joining the room if there are retries left
+      if (retryCount > 0) {
+        console.log(`Retrying to join the room. Attempts left: ${retryCount}`);
+        setTimeout(() => this.joinRoom(retryCount - 1), 2000); // Retry after 2 seconds
+      } else {
+        this.notificationService.notify(
+          'Failed to join the room. Please try again later.',
+          'error'
+        );
+      }
     }
   }
 
