@@ -440,17 +440,21 @@ export class RoomComponent
   }
 
   toggleAudio() {
-    this.local_stream.getAudioTracks().forEach((track) => {
-      track.enabled = !track.enabled;
-    });
-    this.is_muted = !this.is_muted;
+    if (this.local_stream) {
+      this.local_stream.getAudioTracks().forEach((track) => {
+        track.enabled = !track.enabled;
+      });
+      this.is_muted = !this.is_muted;
+    }
   }
 
   toggleVideo() {
-    this.local_stream.getVideoTracks().forEach((track) => {
-      track.enabled = !track.enabled;
-    });
-    this.is_video_on = !this.is_video_on;
+    if (this.local_stream) {
+      this.local_stream.getVideoTracks().forEach((track) => {
+        track.enabled = !track.enabled;
+      });
+      this.is_video_on = !this.is_video_on;
+    }
   }
 
   async shareScreen() {
