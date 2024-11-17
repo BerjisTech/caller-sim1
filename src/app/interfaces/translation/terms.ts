@@ -1,0 +1,146 @@
+export interface Language {
+  id: string; // Unique identifier
+  name: string; // Name of the language
+  isoCode: string; // ISO code of the language
+  countriesSpoken: string[]; // List of countries where the language is spoken
+  tribes: string[]; // Tribes or groups speaking the language
+  dialects: Dialect[]; // List of dialects for the language
+}
+
+export interface Dialect {
+  id: string; // Unique identifier
+  name: string; // Name of the dialect
+  parentLanguageId: string; // Language to which the dialect belongs
+}
+
+export interface Term {
+  id: string; // Unique identifier
+  term: string; // Word or phrase
+  description: string; // Description of the term
+  exampleUsage: string; // Example usage in a sentence
+  languageId: string; // Language of the term
+  dialectId?: string; // Optional dialect
+  attachments: Attachment[]; // List of audio/video attachments
+  translations: Translation[]; // List of translations for the term
+  createdBy: User; // Creator of the term
+  creationDate: Date; // Date when the term was added
+  discussionForumId?: string; // Forum discussion associated with this term
+}
+
+export interface Attachment {
+  id: string; // Unique identifier
+  type: 'audio' | 'video'; // Type of attachment
+  url: string; // Link to the attachment
+  uploadedBy: User; // User who uploaded the attachment
+  forSale?: boolean; // Indicates if the attachment is for sale
+  price?: number; // Price for the attachment
+}
+
+export interface Correction {
+  id: string; // Unique identifier
+  previousTranslationId: string; // Translation being corrected
+  correctedBy: User; // User who made the correction
+  correctionText: string; // Text of the correction
+  correctionDate: Date; // Date of the correction
+}
+
+export interface Glossary {
+  id: string; // Unique identifier
+  name: string; // Name of the glossary
+  terms: Term[]; // List of terms in the glossary
+  createdBy: User; // Creator of the glossary
+  pricePerWord?: number; // Price per word/phrase if for sale
+  isForSale: boolean; // Indicates if the glossary is for sale
+}
+
+export interface User {
+  id: string; // Unique identifier
+  username: string; // Username of the user
+  languages: string[]; // List of languages the user is proficient in
+  isVetted: boolean; // Indicates if the user has been vetted
+  interpreterDetails?: InterpreterDetails; // Optional details for interpreters
+}
+
+export interface InterpreterDetails {
+  availability: {
+    scheduled: boolean; // Available for scheduled calls
+    impromptu: boolean; // Available for impromptu calls
+  };
+  rates: {
+    perSession: number; // Charge per session
+  };
+}
+
+export interface Forum {
+  id: string; // Unique identifier
+  title: string; // Title of the forum
+  description: string; // Description of the forum topic
+  createdBy: User; // Creator of the forum
+  creationDate: Date; // Date the forum was created
+  posts: ForumPost[]; // List of posts in the forum
+}
+
+export interface ForumPost {
+  id: string; // Unique identifier
+  forumId: string; // Forum to which the post belongs
+  content: string; // Content of the post
+  createdBy: User; // Creator of the post
+  creationDate: Date; // Date of the post
+  replies: ForumPost[]; // Replies to the post
+}
+
+export interface BillingModel {
+  type: 'direct' | 'subscription'; // Type of billing model
+  subscriptionTiers?: SubscriptionTier[]; // Optional subscription tiers
+}
+
+export interface SubscriptionTier {
+  id: string; // Unique identifier
+  name: string; // Name of the subscription tier
+  price: number; // Price of the subscription
+  benefits: string[]; // Benefits of the subscription tier
+}
+
+export interface TranslationTerm {
+  term: string; // Word or phrase
+  description: string; // Description of the term
+  exampleUsage: string; // Example usage in a sentence
+  languageId: string; // Language ID for this term
+}
+
+export interface Translation {
+  id: string; // Unique identifier
+  origin: TranslationTerm; // Details of the term in the origin language
+  target: TranslationTerm; // Details of the term in the target language
+  translatedBy: User; // User who translated the term
+  upvotes: number; // Number of upvotes received
+  correctedBy?: User[]; // List of users who corrected the translation
+  corrections: Correction[]; // List of corrections for the translation
+  isOpenForCorrection: boolean; // Indicates if the translation is open for corrections
+}
+
+export interface Call {
+  id: string; // Unique identifier for the call
+  createdBy: User; // User who initiated the call (client)
+  interpreter: User; // Interpreter assigned to the call
+  languageId: string; // Language for which interpretation is needed
+  startTime: Date; // Scheduled start time for the call
+  endTime?: Date; // Actual end time of the call (optional for in-progress)
+  duration?: number; // Duration of the call in minutes
+  status: CallStatus; // Current status of the call
+  rate: number; // Rate charged for the call (per minute or session)
+  billingModel: CallBillingModel; // Billing model (subscription or direct)
+  recording?: Attachment; // Optional recording of the call, if available
+}
+
+export enum CallStatus {
+  Scheduled = 'Scheduled',
+  InProgress = 'InProgress',
+  Completed = 'Completed',
+  Canceled = 'Canceled',
+}
+
+export interface CallBillingModel {
+  type: 'direct' | 'subscription'; // Indicates if the call is billed directly or through a subscription
+  amount: number; // Amount to be charged (direct) or included in the subscription
+}

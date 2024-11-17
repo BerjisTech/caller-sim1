@@ -1,5 +1,10 @@
 import { faker } from '@faker-js/faker';
 
+export interface User {
+  id: string;
+  profile: Profile;
+}
+
 export interface Profile {
   user_id: string;
   is_anonymous: boolean;
