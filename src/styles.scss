@@ -2,3 +2,66 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.tiny-scrollbar {
+  scrollbar-width:thin;
+  scrollbar-color: #015a01 #04c4345d;
+  
+    &::-webkit-scrollbar {
+        width: 3px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: #85ee6a;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: #74fd80;
+        border-radius: 6px;
+        border: 3px solid #70f892;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background-color: #4a5568;
+    }
+
+    &::-webkit-scrollbar-thumb:active {
+        background-color: #4a5568;
+    }
+
+    &::-webkit-scrollbar-button {
+        display: none;
+    }
+
+    &::-webkit-scrollbar-corner {
+        background-color: #66f171;
+    }
+
+    &::-webkit-resizer {
+        display: none;
+    }
+
+    &::-webkit-scrollbar-track-piece:start {
+        background-color: #2d3748;
+    }
+
+    &::-webkit-scrollbar-track-piece:end {
+        background-color: #2d3748;
+    }
+
+    &::-webkit-scrollbar-thumb:horizontal {
+        border: 3px solid #2d3748;
+    }
+
+    &::-webkit-scrollbar-thumb:vertical {
+        border: 3px solid #2d3748;
+    }
+
+    &::-webkit-scrollbar-thumb:horizontal:hover {
+        background-color: #4a5568;
+    }
+
+    &::-webkit-scrollbar-thumb:vertical:hover {
+        background-color: #4a5568;
+    }
+}

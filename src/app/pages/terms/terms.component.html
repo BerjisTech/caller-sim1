@@ -1,0 +1,18 @@
+<app-nav class="w-full"></app-nav>
+
+<div
+    class="tiny-scrollbar overflow-y-auto fixed top-[50px] left-5 h-[calc(100vh-60px)] flex flex-col items-start justify-start w-[95vw] lg:w-[48vw] gap-2 p-2 rounded-lg lg:rounded-none shadow-xl">
+    <div *ngFor="let term of [0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0]"
+        class="term border-[1px] border-solid w-full p-3" role="button" (click)="updateTermDetails(term)">
+        {{ term }}
+    </div>
+</div>
+
+<div *ngIf="showDetails"
+    class="transition ease-in-out duration-500 fixed top-[50px] left-5 lg:left-[50%] lg:right-5 w-[95vw] lg:w-[48%] bg-slate-50 h-[calc(100vh-60px)] p-2 rounded-lg lg:rounded-none shadow-xl">
+    <div class="flex items-center justify-end w-full">
+        <span (click)="showDetails = !showDetails" class="material-symbols-outlined table lg:hidden"
+            role="button">close</span>
+    </div>
+    {{ current_term }}
+</div>
