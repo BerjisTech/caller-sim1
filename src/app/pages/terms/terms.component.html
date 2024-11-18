@@ -4,7 +4,22 @@
     class="tiny-scrollbar overflow-y-auto fixed top-[50px] left-5 h-[calc(100vh-60px)] flex flex-col items-start justify-start w-[95vw] lg:w-[48vw] gap-2 p-2 rounded-lg lg:rounded-none shadow-xl">
     <div *ngFor="let term of [0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0]"
         class="term border-[1px] border-solid w-full p-3" role="button" (click)="updateTermDetails(term)">
-        {{ term }}
+        <div class="flex items-center justify-between">
+            <div class="w-full flex flex-col items-start justify-start">
+                <div class="flex items-center justify-start gap-3">
+                    <span class="text-lg font-bold">Term {{ term }}</span>
+                    <span class="text-gray-500 italic">[Spelling]</span>
+                    <span class="material-symbols-outlined">volume_up</span>
+                </div>
+                <blockquote class="w-full p-4 border-s-4 border-gray-300 bg-green-50 dark:border-gray-500 dark:bg-gray-800">
+                    Description goes here
+                </blockquote>
+                <div>
+                    <span class="text-xs text-gray-500">Posted by: Some Dude</span>
+                </div>
+            </div>
+            <span class="material-symbols-outlined table" role="button">more_vert</span>
+        </div>
     </div>
 </div>
 
