@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { RoomCreatorComponent } from './components/shared/room-creator/room-creator.component';
 import { RoomComponent } from './pages/room/room.component';
 import { TermsComponent } from './pages/terms/terms.component';
+import { CanvasComponent } from './pages/canvas/canvas.component';
 
 export const routes: Routes = [
     {
@@ -23,5 +24,9 @@ export const routes: Routes = [
     {
       path: 'terms/:language',
       component: TermsComponent,
+    },
+    {
+      path: 'canvas',
+      component: CanvasComponent
     }
 ];
