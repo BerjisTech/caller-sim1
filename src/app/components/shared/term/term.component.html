@@ -1,0 +1,22 @@
+<div
+        class="term border-[1px] border-solid w-full p-3" role="button" (click)="emitTerm(term)">
+        <div class="flex items-start justify-between">
+            <div class="w-full flex flex-col gap-2 items-start justify-start">
+                <div class="flex items-center justify-start gap-3">
+                    <span class="text-lg font-bold">Term {{ term.term }}</span>
+                    <span class="text-gray-500 italic">[Spelling]</span>
+                    <span class="material-symbols-outlined">volume_up</span>
+                </div>
+                <blockquote
+                    class="w-full p-4 border-s-4 border-gray-300 bg-green-50 dark:border-gray-500 dark:bg-gray-800 flex flex-col gap-3">
+                    <p>Description goes here</p>
+                    <em class="text-slate-500">Example usage goes here</em>
+                </blockquote>
+                <div class="flex items-center justify-between w-full">
+                    <span class="text-xs text-gray-500">Posted by: Some Dude</span>
+                    <span class="text-xs text-gray-500">300 translations</span>
+                </div>
+            </div>
+            <span class="material-symbols-outlined table transform" role="button">more_vert</span>
+        </div>
+    </div>

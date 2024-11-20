@@ -16,15 +16,17 @@ export interface Dialect {
 export interface Term {
   id: string; // Unique identifier
   term: string; // Word or phrase
-  description: string; // Description of the term
-  exampleUsage: string; // Example usage in a sentence
-  languageId: string; // Language of the term
-  dialectId?: string; // Optional dialect
-  attachments: Attachment[]; // List of audio/video attachments
-  translations: Translation[]; // List of translations for the term
-  createdBy: User; // Creator of the term
-  creationDate: Date; // Date when the term was added
-  discussionForumId?: string; // Forum discussion associated with this term
+  definition: string; // Definition of the term
+  parts_of_speech: string[]; // Parts of speech for the term
+  synonyms: string[]; // List of synonyms for the term
+  antonyms: string[]; // List of antonyms for the term
+  examples: string[]; // List of examples for the term
+  language_id: string; // Language of the term
+  dialect_id?: string; // Optional dialect
+  attachments?: Attachment[]; // List of audio/video attachments
+  translations?: Translation[]; // List of translations for the term
+  created_by: User; // Creator of the term
+  creation_date: Date; // Date when the term was added
 }
 
 export interface Attachment {
