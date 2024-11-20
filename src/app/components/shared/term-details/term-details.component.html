@@ -6,7 +6,7 @@
             role="button">close</span>
     </div>
     <div>
-        <app-select></app-select>
+        <app-select *ngIf="term.translations"></app-select>
     </div>
     <div>
         {{term.definition}}
