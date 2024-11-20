@@ -10,26 +10,7 @@ import { CommonModule } from '@angular/common';
   styleUrl: './term.component.scss',
 })
 export class TermComponent {
-  @Input() term: Term = {
-    id: '0',
-    term: '',
-    definition: '',
-    parts_of_speech: [''],
-    synonyms: [],
-    antonyms: [],
-    examples: [],
-    created_by: {
-      id: '',
-      username: '',
-      languages: [],
-      isVetted: false,
-    },
-    language_id: '',
-    dialect_id: '',
-    attachments: [],
-    translations: [],
-    creation_date: new Date(),
-  };
+  @Input() term!: Term;
   // Properly define the output with an EventEmitter
   @Output() updateTermDetails: EventEmitter<Term> = new EventEmitter<Term>();
 

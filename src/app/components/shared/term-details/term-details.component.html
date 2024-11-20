@@ -1,7 +1,8 @@
-<div 
+<div
     class="transition ease-in-out duration-500 w-full bg-slate-50 h-[calc(100vh-60px)] p-2 rounded-lg lg:rounded-none shadow-xl flex flex-col gap-2">
-    <div class="flex items-center justify-between w-full">
-        <span class="font-black capitalize text-[20px]">{{ term.term }}</span>
+    <div class="flex items-center justify-between w-full gap-2">
+        <span *ngIf="can_go_back" (click)="closeDetails()" class="font-thin material-symbols-outlined" role="button">arrow_back</span>
+        <span class="flex-grow font-black capitalize text-[20px]">{{ term.term }}</span>
         <span (click)="closeDetails()" class="font-thin material-symbols-outlined table lg:hidden"
             role="button">close</span>
     </div>

@@ -2,7 +2,10 @@ export interface Language {
   id: string; // Unique identifier
   name: string; // Name of the language
   isoCode: string; // ISO code of the language
-  countriesSpoken: string[]; // List of countries where the language is spoken
+  iso_639_1: string; // ISO 639-1 code of the language
+  iso_639_2: string; // ISO 639-2 code of the language
+  family: string; // Language family
+  countries_spoken: string[]; // List of countries where the language is spoken
   tribes: string[]; // Tribes or groups speaking the language
   dialects: Dialect[]; // List of dialects for the language
 }
@@ -10,7 +13,7 @@ export interface Language {
 export interface Dialect {
   id: string; // Unique identifier
   name: string; // Name of the dialect
-  parentLanguageId: string; // Language to which the dialect belongs
+  language_id: string; // Language to which the dialect belongs
 }
 
 export interface Term {
@@ -21,7 +24,7 @@ export interface Term {
   synonyms: string[]; // List of synonyms for the term
   antonyms: string[]; // List of antonyms for the term
   examples: string[]; // List of examples for the term
-  language_id: string; // Language of the term
+  language: Language; // Language of the term
   dialect_id?: string; // Optional dialect
   attachments?: Attachment[]; // List of audio/video attachments
   translations?: Term[]; // List of translations for the term
