@@ -24,9 +24,14 @@ export interface Term {
   language_id: string; // Language of the term
   dialect_id?: string; // Optional dialect
   attachments?: Attachment[]; // List of audio/video attachments
-  translations?: Translation[]; // List of translations for the term
+  translations?: Term[]; // List of translations for the term
   created_by: User; // Creator of the term
   creation_date: Date; // Date when the term was added
+  is_translation?: boolean; // Indicates if the term is a translation
+  is_correction?: boolean; // Indicates if the term is a correction
+  translated_term_id?: string; // ID of the translated term
+  corrected_term_id?: string; // ID of the corrected term
+  comment?: string; // Comment or note for the term if it is a translation or correction
 }
 
 export interface Attachment {
@@ -36,14 +41,6 @@ export interface Attachment {
   uploadedBy: User; // User who uploaded the attachment
   forSale?: boolean; // Indicates if the attachment is for sale
   price?: number; // Price for the attachment
-}
-
-export interface Correction {
-  id: string; // Unique identifier
-  previousTranslationId: string; // Translation being corrected
-  correctedBy: User; // User who made the correction
-  correctionText: string; // Text of the correction
-  correctionDate: Date; // Date of the correction
 }
 
 export interface Glossary {
@@ -101,24 +98,6 @@ export interface SubscriptionTier {
   name: string; // Name of the subscription tier
   price: number; // Price of the subscription
   benefits: string[]; // Benefits of the subscription tier
-}
-
-export interface TranslationTerm {
-  term: string; // Word or phrase
-  description: string; // Description of the term
-  exampleUsage: string; // Example usage in a sentence
-  languageId: string; // Language ID for this term
-}
-
-export interface Translation {
-  id: string; // Unique identifier
-  origin: TranslationTerm; // Details of the term in the origin language
-  target: TranslationTerm; // Details of the term in the target language
-  translatedBy: User; // User who translated the term
-  upvotes: number; // Number of upvotes received
-  correctedBy?: User[]; // List of users who corrected the translation
-  corrections: Correction[]; // List of corrections for the translation
-  isOpenForCorrection: boolean; // Indicates if the translation is open for corrections
 }
 
 export interface Call {
