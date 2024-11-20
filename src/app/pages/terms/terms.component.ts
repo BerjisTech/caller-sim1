@@ -5,7 +5,7 @@ import { SelectComponent } from '../../components/shared/select/select.component
 import { TermComponent } from '../../components/shared/term/term.component';
 import { Term } from '../../interfaces/translation/terms';
 import { faker } from '@faker-js/faker';
-import { TermDetailsComponent } from "../../components/shared/term-details/term-details.component";
+import { TermDetailsComponent } from '../../components/shared/term-details/term-details.component';
 
 @Component({
   selector: 'app-terms',
@@ -34,6 +34,7 @@ export class TermsComponent implements OnInit {
     // Fetch terms from API
     // this.terms = this.apiService.getTerms();
     // For now, use a dummy array of terms
+
     this.terms = Array.from({ length: 10 }, () => {
       return {
         id: '0',
@@ -42,7 +43,7 @@ export class TermsComponent implements OnInit {
         parts_of_speech: [''],
         synonyms: [],
         antonyms: [],
-        examples: [],
+        examples: this.dummy_examples(),
         created_by: {
           id: '',
           username: '',
@@ -78,4 +79,10 @@ export class TermsComponent implements OnInit {
   closeDetails() {
     this.showDetails = false;
   }
+
+  random_integer = (limit: number) => Math.floor(Math.random() * limit);
+  dummy_examples = () =>
+    Array.from({ length: this.random_integer(5) }, () =>
+      faker.lorem.sentence()
+    );
 }
