@@ -1,7 +1,7 @@
 export interface Language {
   id: string; // Unique identifier
   name: string; // Name of the language
-  isoCode: string; // ISO code of the language
+  iso_code: string; // ISO code of the language
   iso_639_1: string; // ISO 639-1 code of the language
   iso_639_2: string; // ISO 639-2 code of the language
   family: string; // Language family
@@ -41,8 +41,8 @@ export interface Attachment {
   id: string; // Unique identifier
   type: 'audio' | 'video'; // Type of attachment
   url: string; // Link to the attachment
-  uploadedBy: User; // User who uploaded the attachment
-  forSale?: boolean; // Indicates if the attachment is for sale
+  uploaded_by: User; // User who uploaded the attachment
+  for_sale?: boolean; // Indicates if the attachment is for sale
   price?: number; // Price for the attachment
 }
 
@@ -50,17 +50,17 @@ export interface Glossary {
   id: string; // Unique identifier
   name: string; // Name of the glossary
   terms: Term[]; // List of terms in the glossary
-  createdBy: User; // Creator of the glossary
-  pricePerWord?: number; // Price per word/phrase if for sale
-  isForSale: boolean; // Indicates if the glossary is for sale
+  created_by: User; // Creator of the glossary
+  price_per_word?: number; // Price per word/phrase if for sale
+  is_for_sale: boolean; // Indicates if the glossary is for sale
 }
 
 export interface User {
   id: string; // Unique identifier
   username: string; // Username of the user
   languages: string[]; // List of languages the user is proficient in
-  isVetted: boolean; // Indicates if the user has been vetted
-  interpreterDetails?: InterpreterDetails; // Optional details for interpreters
+  is_vetted: boolean; // Indicates if the user has been vetted
+  interpreter_details?: InterpreterDetails; // Optional details for interpreters
 }
 
 export interface InterpreterDetails {
@@ -69,7 +69,7 @@ export interface InterpreterDetails {
     impromptu: boolean; // Available for impromptu calls
   };
   rates: {
-    perSession: number; // Charge per session
+    per_session: number; // Charge per session
   };
 }
 
@@ -77,23 +77,26 @@ export interface Forum {
   id: string; // Unique identifier
   title: string; // Title of the forum
   description: string; // Description of the forum topic
-  createdBy: User; // Creator of the forum
-  creationDate: Date; // Date the forum was created
+  created_by: User; // Creator of the forum
+  created_on: Date; // Date the forum was created
   posts: ForumPost[]; // List of posts in the forum
 }
 
 export interface ForumPost {
   id: string; // Unique identifier
-  forumId: string; // Forum to which the post belongs
+  forum_id: string; // Forum to which the post belongs
   content: string; // Content of the post
-  createdBy: User; // Creator of the post
-  creationDate: Date; // Date of the post
+  created_by: User; // Creator of the post
+  created_on: Date; // Date of the post
   replies: ForumPost[]; // Replies to the post
+  is_term_discussion?: boolean; // Indicates if the post is a term discussion
+  is_term_question?: boolean; // Indicates if the post is a term question
+  term_id?: string; // ID of the term being discussed
 }
 
 export interface BillingModel {
   type: 'direct' | 'subscription'; // Type of billing model
-  subscriptionTiers?: SubscriptionTier[]; // Optional subscription tiers
+  subscription_tiers?: SubscriptionTier[]; // Optional subscription tiers
 }
 
 export interface SubscriptionTier {
@@ -105,15 +108,15 @@ export interface SubscriptionTier {
 
 export interface Call {
   id: string; // Unique identifier for the call
-  createdBy: User; // User who initiated the call (client)
+  created_by: User; // User who initiated the call (client)
   interpreter: User; // Interpreter assigned to the call
-  languageId: string; // Language for which interpretation is needed
-  startTime: Date; // Scheduled start time for the call
-  endTime?: Date; // Actual end time of the call (optional for in-progress)
+  language_id: string; // Language for which interpretation is needed
+  start_time: Date; // Scheduled start time for the call
+  end_time?: Date; // Actual end time of the call (optional for in-progress)
   duration?: number; // Duration of the call in minutes
   status: CallStatus; // Current status of the call
   rate: number; // Rate charged for the call (per minute or session)
-  billingModel: CallBillingModel; // Billing model (subscription or direct)
+  billing_model: CallBillingModel; // Billing model (subscription or direct)
   recording?: Attachment; // Optional recording of the call, if available
 }
 
