@@ -30,3 +30,13 @@ export const SUB_TAGS_FROM_SUGGESTED_TAGS: { [parent: string]: string } = {
   food: 'cooking, recipes, restaurants, dining, nutrition, diets',
   lifestyle: 'fashion, beauty, health, fitness, wellness, self-care',
 };
+
+export const DAYS_OF_WEEK: string[] = [
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+];

@@ -1,0 +1,86 @@
+<div class="flex flex-col justify-center items-start gap-3 relative">
+
+    <div class="flex justify-center items-center gap-1 relative">
+        <div
+            class="flex justify-start items-center  relative px-3 py-1 rounded-2xl bg-accent dark:bg-black mix-blend-multiply">
+            <p class=" text-base font-medium text-center text-primary dark:text-accent">
+                Available
+            </p>
+        </div>
+    </div>
+
+    <div
+        class="flex flex-col justify-start items-center  {{ mini_calendar ? 'w-[304px]':'w-full h-full'}} relative gap-[35.42px] p-[24px_16px] rounded-[12px] bg-green-300 dark:bg-black border border-accent-light dark:border-dark shadow-[0px_2.53px_20.24px_0_rgba(170,170,170,0.03)]">
+        <div class="w-full flex justify-between items-center">
+            <p class="flex-grow"
+                style="font-size: 18px; color: #4d9d9d; font-family: 'Poppins'; font-style: normal; font-weight: 600;">
+                {{ currentMonthName }} {{ currentYear }}
+            </p>
+            <div class="flex justify-start items-center gap-4">
+                <svg role="button" (click)="previousMonth()" width="5" height="9" viewBox="0 0 5 9" fill="none"
+                    xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+                    <path d="M4.32385 0.692496L0.74585 4.27049L4.32385 7.84849" stroke="#4D9D9D" stroke-width="1.26501"
+                        stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+                <svg role="button" (click)="nextMonth()" width="6" height="9" viewBox="0 0 6 9" fill="none"
+                    xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+                    <path d="M1.47986 0.692633L5.05786 4.27063L1.47986 7.84863" stroke="#4D9D9D" stroke-width="1.26501"
+                        stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+            </div>
+        </div>
+        <div
+            class="flex flex-col items-center p-0 gap-[20.24px] relative {{ mini_calendar ? 'w-[272px]':'w-full h-full'}}">
+            <div class="flex flex-col w-full">
+                <div class="{{ mini_calendar ? 'w-[272px]' : 'w-full h-full'}} grid grid-cols-7 gap-[1px]">
+                    <div *ngFor="let day of daysOfWeek"
+                        class="day-cell flex items-center justify-center h-[24px] font-poppins font-medium text-[16px] text-secondary">
+                        <span>{{ day.substring(0, 2) }}</span>
+                    </div>
+                </div>
+
+                <div class="{{ mini_calendar ? 'w-[272px]' : 'w-full h-full'}} grid grid-cols-7 gap-[1px] mt-[15px]">
+                    <div role="button"
+                        class="group relative {{day && getEventsForDay(day).length > 0 ? 'bg-secondary dark:bg-primary-alt text-accent' : day && isToday(day) ? 'bg-primary-alt dark:bg-primary text-accent' :'dark:text-accent'}} hover:bg-secondary dark:text-accent col-span-1 flex items-center justify-center relative"
+                        *ngFor="let day of daysInMonth" onclick="addEvent(day)">
+                        <div
+                            class="w-[30px] {{mini_calendar ? '' : 'h-[10vh]'}} p-3 rounded-lg flex items-center justify-center text-base">
+                            {{ day ? day.getDate() : '' }}
+                        </div>
+
+                        <div *ngIf="day && !mini_calendar && getEventsForDay(day).length > 0"
+                            class="z-[400000] hidden group-hover:flex flex-col items-start justify-start absolute bottom-[-100%] left-0 w-[300px] h-[400px] overflow-y-auto rounded-lg bg-accent border-primary shadow dark:bg-dark p-2 text-dark dark:text-accent">
+                            <div *ngFor="let event of getEventsForDay(day)"
+                                class="flex items-center justify-start w-full gap-2 hover:bg-secondary dark:hover:bg-black p-2 rounded-md">
+                                <strong>{{ event.title }}</strong>
+                                <p>{{ event.description }}</p>
+                                <button (click)="updateEvent(event)"
+                                    class="material-symbols-outlined text-primary-alt">edit</button>
+                                <button (click)="removeEvent(event.id)"
+                                    class="material-symbols-outlined text-red-600">delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex justify-between items-center relative">
+        <p class=" text-sm text-left text-black dark:text-white">
+            Calendar is publicly visible
+        </p>
+        <div class="flex justify-start items-center  relative gap-2">
+            <input type="switch" />
+        </div>
+    </div>
+
+    <div class="flex flex-wrap justify-between items-start relative w-full">
+        <a href="/ng" role="button" class="button-link text-sm font-semibold text-center text-secondary">
+            Edit calendar
+        </a>
+        <a href="/ng" role="button" class="button-link text-sm font-semibold text-center text-secondary">
+            View full calendar
+        </a>
+    </div>
+</div>

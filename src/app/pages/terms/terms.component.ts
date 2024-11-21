@@ -6,11 +6,12 @@ import { TermComponent } from '../../components/shared/term/term.component';
 import { Term } from '../../interfaces/translation/terms';
 import { faker } from '@faker-js/faker';
 import { TermDetailsComponent } from '../../components/shared/term-details/term-details.component';
+import { CalendarComponent } from "../../components/shared/calendar/calendar.component";
 
 @Component({
   selector: 'app-terms',
   standalone: true,
-  imports: [CommonModule, NavComponent, TermComponent, TermDetailsComponent],
+  imports: [CommonModule, NavComponent, TermComponent, TermDetailsComponent, CalendarComponent],
   templateUrl: './terms.component.html',
   styleUrl: './terms.component.scss',
 })
@@ -40,6 +41,7 @@ export class TermsComponent implements OnInit {
         id: '0',
         term: faker.lorem.word(),
         definition: faker.lorem.sentence(),
+        spelling: faker.lorem.word(),
         parts_of_speech: [''],
         synonyms: [],
         antonyms: [],

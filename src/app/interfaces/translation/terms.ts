@@ -19,6 +19,7 @@ export interface Dialect {
 export interface Term {
   id: string; // Unique identifier
   term: string; // Word or phrase
+  spelling?: string; // Optional spelling of the term
   definition: string; // Definition of the term
   parts_of_speech: string[]; // Parts of speech for the term
   synonyms: string[]; // List of synonyms for the term
@@ -130,4 +131,12 @@ export enum CallStatus {
 export interface CallBillingModel {
   type: 'direct' | 'subscription'; // Indicates if the call is billed directly or through a subscription
   amount: number; // Amount to be charged (direct) or included in the subscription
+}
+
+
+export interface CalendarEvent {
+  id: number;
+  title: string;
+  date: Date;
+  description?: string;
 }
