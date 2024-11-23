@@ -1,11 +1,9 @@
-<app-nav class="w-full"></app-nav>
-
 <div
-    class="tiny-scrollbar overflow-y-auto fixed top-[50px] left-5 h-[calc(100vh-60px)] flex flex-col items-start justify-start w-[95vw] lg:w-[48vw] gap-2 p-2 rounded-lg lg:rounded-none shadow-xl">
-    <app-calendar [mini_calendar]="true" class="w-full bg-white"></app-calendar>
+    class="tiny-scrollbar overflow-y-auto fixed top-[70px] left-5 h-[calc(100vh-60px)] flex flex-col items-start justify-start w-[95vw] lg:w-[48vw] gap-2 p-2 rounded-lg lg:rounded-none shadow-xl">
+    <app-calendar [mini_calendar]="true" class="w-[300px]"></app-calendar>
     <app-term *ngFor="let term of terms" class="w-full" (updateTermDetails)="updateTermDetails(term)"
         [term]="term"></app-term>
 </div>
 
-<app-term-details *ngIf="showDetails"
-    class="fixed top-[50px] left-5 lg:left-[50%] lg:right-5 w-[95vw] lg:w-[48%]" [term]="current_term" (close)="closeDetails()"></app-term-details>
+<app-term-details *ngIf="showDetails" class="fixed top-[70px] left-5 lg:left-[50%] lg:right-5 w-[95vw] lg:w-[48%]"
+    [term]="current_term" (close)="closeDetails()"></app-term-details>

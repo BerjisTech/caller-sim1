@@ -1,11 +1,13 @@
 <div class="relative">
-    <div class="w-full flex items-center justify-between gap-2 bg-slate-100 p-2 shadow-xl" role="button">
+    <div class="w-full flex items-center justify-between gap-2 bg-slate-100 dark:bg-slate-900 p-2 shadow-xl"
+        role="button">
         <input type="hidden" />
-        <span class="material-symbols-outlined">keyboard_arrow_down</span>
+        <span class="material-symbols-outlined text-slate-900 dark:text-slate-500">keyboard_arrow_down</span>
         <input type="text" (focus)="updateOptions($event)" (input)="updateOptions($event)"
             class="flex-grow w-full p-2 border-none outline-none focus:outline-none bg-transparent rounded-none"
             placeholder="Pick language for translation">
-        <span class="material-symbols-outlined {{ show_options ? 'rotate-180' : ''}}">keyboard_arrow_down</span>
+        <span
+            class="material-symbols-outlined {{ show_options ? 'rotate-180' : ''}} text-slate-900 dark:text-slate-500">keyboard_arrow_down</span>
     </div>
     <div *ngIf="show_options" class="absolute bg-slate-100 rounded-b-lg p-2 top-[110%] w-full flex flex-col gap-2">
         <div class="dropdown-item" role="button" *ngFor="let dropdown_item of [0,1,2,3,4,5,6,7,8,9]">dropdown_item

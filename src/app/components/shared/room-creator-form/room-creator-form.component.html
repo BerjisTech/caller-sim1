@@ -1,7 +1,7 @@
 <form [formGroup]="roomForm" class="w-auto lg:w-full">
     <div>
         <!-- Tags input -->
-        <div class="rounded-xl border border-slate-400 dark:border-green-700 p-2 gap-3">
+        <div class="rounded-xl border border-slate-400 dark:border-red-700 p-2 gap-3">
             <div class="h-full relative">
                 <label for="tags"
                     class="absolute top-[100%] shadow-md rounded-md backdrop-blur-md px-4 text-slate-950 dark:text-slate-200">Tags:</label>
@@ -11,11 +11,11 @@
                         class="text-slate-950 dark:text-slate-200 w-full p-2 bg-transparent outline-none focus:outline-none font-semibold text-left flex-grow"
                         placeholder="What are your interests">
                     <button (click)="joinRoom($event)"
-                        class="bg-green-950 px-3 py-2 font-semibold text-white rounded-lg w-full lg:w-auto flex-grow lg:flex-grow-0 whitespace-nowrap">
+                        class="bg-red-950 px-3 py-2 font-semibold text-white rounded-lg w-full lg:w-auto flex-grow lg:flex-grow-0 whitespace-nowrap">
                         Join Random
                     </button>
                     <button (click)="hostRoom($event)"
-                        class="bg-green-950 px-3 py-2 font-semibold text-white rounded-lg w-full lg:w-auto flex-grow lg:flex-grow-0">
+                        class="bg-red-950 px-3 py-2 font-semibold text-white rounded-lg w-full lg:w-auto flex-grow lg:flex-grow-0">
                         Host
                     </button>
                 </div>
@@ -26,17 +26,17 @@
         </div>
         <div class="flex flex-wrap items-center justify-center gap-3 mt-4">
             <div *ngFor="let tag of tags_array" role="button"
-                class="text-slate-700 bg-green-300 rounded-lg px-3 flex items-center justify-center">
+                class="text-slate-700 bg-red-300 rounded-lg px-3 flex items-center justify-center">
                 <span>{{tag}}</span>
                 <span class="material-symbols-outlined text-[12px]" (click)="removeTag(tag)">close</span>
             </div>
         </div>
 
         <div>
-            <p>These may interest you</p>
+            <p class="text-slate-950 dark:text-slate-100">These may interest you</p>
             <div class="flex flex-wrap items-center justify-center gap-3 mt-4 w-auto lg:w-[500px]">
                 <div *ngFor="let tag of sugested_tags" role="button" (click)="addSuggestedTag(tag)"
-                    class="text-slate-700 bg-green-300 rounded-lg px-3 flex items-center justify-center">
+                    class="text-slate-700 bg-red-300 rounded-lg px-3 flex items-center justify-center">
                     {{tag}}
                 </div>
             </div>
@@ -44,4 +44,4 @@
     </div>
 </form>
 <div *ngIf="searching_for_rooms"
-    class="fixed top-0 left-0 right-0 bottom-0 w-screen h-screen bg-green-300 dark:bg-green-950 overflow-hidden"></div>
+    class="fixed top-0 left-0 right-0 bottom-0 w-screen h-screen bg-red-300 dark:bg-red-950 overflow-hidden"></div>

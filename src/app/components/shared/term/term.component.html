@@ -2,14 +2,14 @@
     <div class="flex items-start justify-between">
         <div class="w-full flex flex-col gap-2 items-start justify-start">
             <div class="flex items-center justify-start gap-3">
-                <span class="text-lg font-bold">Term {{ term.term }}</span>
-                <span class="text-gray-500 italic">[{{term.spelling}}]</span>
-                <span class="material-symbols-outlined">volume_up</span>
+                <span class="text-lg font-bold text-slate-950 dark:text-red-700">Term {{ term.term }}</span>
+                <span class="text-gray-500 dark:text-red-900 italic">[{{term.spelling}}]</span>
+                <span class="material-symbols-outlined text-gray-500 dark:text-red-700">volume_up</span>
             </div>
             <blockquote
-                class="w-full p-4 border-s-4 border-gray-300 bg-green-50 dark:border-gray-500 dark:bg-gray-800 flex flex-col gap-3">
-                <p [innerHTML]="highlightTerm(term.definition)"></p>
-                <p *ngIf="term.translations"><em *ngFor="let example of term.examples" class="text-slate-500 pe-2"
+                class="w-full p-4 border-s-4 border-gray-300 bg-red-50 dark:border-gray-500 dark:bg-gray-800 flex flex-col gap-3">
+                <p [innerHTML]="highlightTerm(term.definition)" class="text-slate-950 dark:text-slate-500"></p>
+                <p *ngIf="term.translations"><em *ngFor="let example of term.examples" class="text-slate-500 dark:text-slate-400 pe-2"
                         [innerHTML]="highlightTerm(example)"></em></p>
             </blockquote>
             <div class="flex items-center justify-between w-full">

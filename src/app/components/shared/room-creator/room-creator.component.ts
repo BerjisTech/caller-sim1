@@ -12,7 +12,7 @@ import { RoomCreatorFormComponent } from '../room-creator-form/room-creator-form
 @Component({
   selector: 'app-room-creator',
   standalone: true,
-  imports: [CommonModule, DarkModeComponent, NavComponent, RoomCreatorFormComponent],
+  imports: [CommonModule, RoomCreatorFormComponent],
   providers: [ReactiveFormsModule, FormsModule],
   templateUrl: './room-creator.component.html',
   styleUrl: './room-creator.component.scss',

@@ -27,7 +27,8 @@ export class DarkModeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.toggleDarkMode();
+    this.dark_mode = this.contentService.getDarkMode();
+    this.contentService.setDarkMode(this.dark_mode);
   }
 
   toggleDarkMode() {
