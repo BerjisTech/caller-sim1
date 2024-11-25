@@ -4,6 +4,7 @@ import { RoomComponent } from './pages/room/room.component';
 import { TermsComponent } from './pages/terms/terms.component';
 import { CanvasComponent } from './pages/canvas/canvas.component';
 import { MainLayoutComponent } from './components/shared/main-layout/main-layout.component';
+import { FaqComponent } from './pages/faq/faq.component';
 
 export const routes: Routes = [
     {
@@ -13,6 +14,10 @@ export const routes: Routes = [
         {
           path: '',
           component: RoomCreatorComponent
+        },
+        {
+          path: 'faq',
+          component: FaqComponent,
         },
         {
           path: 'lobby',
