@@ -3,16 +3,16 @@
     <div class="flex justify-center items-center gap-1 relative">
         <div
             class="flex justify-start items-center  relative px-3 py-1 rounded-2xl bg-accent dark:bg-slate-800 mix-blend-multiply">
-            <p class=" text-base font-medium text-center text-primary dark:text-red-400">
+            <p class=" text-base font-medium text-center text-primary dark:text-indigo-400">
                 Available
             </p>
         </div>
     </div>
 
     <div
-        class="flex flex-col justify-start items-center  {{ mini_calendar ? 'w-[304px]':'w-full h-full'}} relative gap-[35.42px] p-[24px_16px] rounded-[12px] bg-red-300 dark:bg-black border border-accent-light dark:border-dark shadow-[0px_2.53px_20.24px_0_rgba(170,170,170,0.03)]">
+        class="flex flex-col justify-start items-center  {{ mini_calendar ? 'w-[304px]':'w-full h-full'}} relative gap-[35.42px] p-[24px_16px] rounded-[12px] bg-indigo-300 dark:bg-black border border-accent-light dark:border-dark shadow-[0px_2.53px_20.24px_0_rgba(170,170,170,0.03)]">
         <div class="w-full flex justify-between items-center">
-            <p class="flex-grow text-[18px] text-red-800 font-regular font-[600]">
+            <p class="flex-grow text-[18px] text-indigo-800 font-regular font-[600]">
                 {{ currentMonthName }} {{ currentYear }}
             </p>
             <div class="flex justify-start items-center gap-4">
@@ -33,14 +33,14 @@
             <div class="flex flex-col w-full">
                 <div class="{{ mini_calendar ? 'w-[272px]' : 'w-full h-full'}} grid grid-cols-7 gap-[1px]">
                     <div *ngFor="let day of daysOfWeek"
-                        class="day-cell flex items-center justify-center h-[24px] font-poppins font-medium text-[16px] text-red-500">
+                        class="day-cell flex items-center justify-center h-[24px] font-poppins font-medium text-[16px] text-indigo-500">
                         <span>{{ day.substring(0, 2) }}</span>
                     </div>
                 </div>
 
                 <div class="{{ mini_calendar ? 'w-[272px]' : 'w-full h-full'}} grid grid-cols-7 gap-[1px] mt-[15px]">
                     <div role="button"
-                        class="group relative {{day && getEventsForDay(day).length > 0 ? 'bg-red-700 dark:bg-red-800 text-red-200' : day && isToday(day) ? 'bg-red-900 dark:bg-red-900 rounded-md text-red-400' :'dark:text-red-400'}} hover:bg-red-200 dark:text-slate-50 col-span-1 flex items-center justify-center relative"
+                        class="group relative {{day && getEventsForDay(day).length > 0 ? 'bg-indigo-700 dark:bg-indigo-800 text-indigo-200' : day && isToday(day) ? 'bg-indigo-900 dark:bg-indigo-900 rounded-md text-indigo-400' :'dark:text-indigo-400'}} hover:bg-indigo-200 dark:text-slate-50 col-span-1 flex items-center justify-center relative"
                         *ngFor="let day of daysInMonth" onclick="addEvent(day)">
                         <div
                             class="w-[30px] {{mini_calendar ? '' : 'h-[10vh]'}} p-3 rounded-lg flex items-center justify-center text-base">
@@ -48,7 +48,7 @@
                         </div>
 
                         <div *ngIf="day && !mini_calendar && getEventsForDay(day).length > 0"
-                            class="z-[400000] hidden group-hover:flex flex-col items-start justify-start absolute bottom-[-100%] left-0 w-[300px] h-[400px] overflow-y-auto rounded-lg bg-red-700 border-primary shadow dark:bg-dark p-2 text-dark dark:text-red-700">
+                            class="z-[400000] hidden group-hover:flex flex-col items-start justify-start absolute bottom-[-100%] left-0 w-[300px] h-[400px] overflow-y-auto rounded-lg bg-indigo-700 border-primary shadow dark:bg-dark p-2 text-dark dark:text-indigo-700">
                             <div *ngFor="let event of getEventsForDay(day)"
                                 class="flex items-center justify-start w-full gap-2 hover:bg-secondary dark:hover:bg-black p-2 rounded-md">
                                 <strong>{{ event.title }}</strong>
@@ -56,7 +56,7 @@
                                 <button (click)="updateEvent(event)"
                                     class="material-symbols-outlined text-primary-alt">edit</button>
                                 <button (click)="removeEvent(event.id)"
-                                    class="material-symbols-outlined text-red-600">delete</button>
+                                    class="material-symbols-outlined text-indigo-600">delete</button>
                             </div>
                         </div>
                     </div>

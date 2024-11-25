@@ -1,8 +1,8 @@
-<div class="bg-red-50 dark:bg-slate-800 text-slate-950 dark:text-slate-50 relative w-full overflow-hidden flex"
+<div class="bg-indigo-50 dark:bg-slate-800 text-slate-950 dark:text-slate-50 relative w-full overflow-hidden flex"
     (timeupdate)="calculateVideoSizes()">
 
     <div *ngIf="connected_users.length < 2"
-        class="fixed top-[90px] left-10 rounded-md shadow-xl p-2 bg-red-300 dark:bg-red-950 overflow-hidden">
+        class="fixed top-[90px] left-10 rounded-md shadow-xl p-2 bg-indigo-300 dark:bg-indigo-950 overflow-hidden">
         <div class="flex flex-col items-center justify-center h-full w-full" role="button">
             <p class="text-[50px]">You're in the room alone</p>
             <p class="text-[30px]">Share this link to invite others while we get you random peers</p>
@@ -37,7 +37,7 @@
             <app-dark-mode></app-dark-mode>
             <div class="relative flex items-center justify-center text-[30px]">
                 <div *ngIf="show_reactions"
-                    class="absolute w-auto whitespace-nowrap px-2 table bottom-[110%] left-[50%] transform translate-x-[-50%] shadow-xl rounded-xl bg-red-100 dark:bg-red-950">
+                    class="absolute w-auto whitespace-nowrap px-2 table bottom-[110%] left-[50%] transform translate-x-[-50%] shadow-xl rounded-xl bg-indigo-100 dark:bg-indigo-950">
                     <span class="inline" role="button" (click)="sendReaction('😂')">😂</span>
                     <span class="inline" role="button" (click)="sendReaction('😍')">😍</span>
                     <span class="inline" role="button" (click)="sendReaction('👏')">👏</span>
@@ -55,8 +55,8 @@
             </div>
             <div class="bg-slate-600 p-1 rounded-xl relative flex items-center justify-center">
                 <div *ngIf="show_audio_devices"
-                    class="overflow-hidden absolute w-auto whitespace-nowrap flex flex-col items-start justify-start bottom-[110%] left-[50%] transform translate-x-[-50%] shadow-xl rounded-xl bg-red-100 dark:bg-red-950">
-                    <span *ngFor="let device of audio_devices" class="w-full p-2 hover:bg-red-300" role="button"
+                    class="overflow-hidden absolute w-auto whitespace-nowrap flex flex-col items-start justify-start bottom-[110%] left-[50%] transform translate-x-[-50%] shadow-xl rounded-xl bg-indigo-100 dark:bg-indigo-950">
+                    <span *ngFor="let device of audio_devices" class="w-full p-2 hover:bg-indigo-300" role="button"
                         (click)="selected_audio_device_id = device.deviceId; updateMediaStream()">{{ device.label
                         }}</span>
                 </div>
@@ -64,13 +64,13 @@
                     class="material-symbols-outlined text-dark dark:text-secondary">{{show_audio_devices ?
                     'keyboard_arrow_up':'keyboard_arrow_down'}}</span>
                 <button
-                    class="{{is_muted ? 'bg-red-400':'bg-slate-500'}} rounded-xl px-2 py-1 text-slate-50 material-symbols-outlined"
+                    class="{{is_muted ? 'bg-indigo-400':'bg-slate-500'}} rounded-xl px-2 py-1 text-slate-50 material-symbols-outlined"
                     (click)="toggleAudio()">mic</button>
             </div>
             <div class="bg-slate-600 p-1 rounded-xl relative flex items-center justify-center">
                 <div *ngIf="show_video_devices"
-                    class="overflow-hidden absolute w-auto whitespace-nowrap flex flex-col items-start justify-start bottom-[110%] left-[50%] transform translate-x-[-50%] shadow-xl rounded-xl bg-red-100 dark:bg-red-950">
-                    <span *ngFor="let device of video_devices" class="w-full p-2 hover:bg-red-300" role="button"
+                    class="overflow-hidden absolute w-auto whitespace-nowrap flex flex-col items-start justify-start bottom-[110%] left-[50%] transform translate-x-[-50%] shadow-xl rounded-xl bg-indigo-100 dark:bg-indigo-950">
+                    <span *ngFor="let device of video_devices" class="w-full p-2 hover:bg-indigo-300" role="button"
                         (click)="selected_video_device_id = device.deviceId; updateMediaStream()">{{ device.label
                         }}</span>
                 </div>
@@ -78,18 +78,18 @@
                     class="material-symbols-outlined text-dark dark:text-secondary">{{show_video_devices ?
                     'keyboard_arrow_up':'keyboard_arrow_down'}}</span>
                 <button
-                    class="{{is_video_on ? 'bg-slate-500':'bg-red-400'}} rounded-xl px-2 py-1 text-slate-50 material-symbols-outlined"
+                    class="{{is_video_on ? 'bg-slate-500':'bg-indigo-400'}} rounded-xl px-2 py-1 text-slate-50 material-symbols-outlined"
                     (click)="toggleVideo()">camera</button>
             </div>
             <button
-                class="{{show_sidechat ? 'bg-red-400':'bg-slate-500'}} rounded-xl px-3 py-2 text-slate-50 material-symbols-outlined"
+                class="{{show_sidechat ? 'bg-indigo-400':'bg-slate-500'}} rounded-xl px-3 py-2 text-slate-50 material-symbols-outlined"
                 (click)="show_sidechat = !show_sidechat">info</button>
-            <button class="bg-red-400 rounded-xl px-3 py-2 text-slate-50 material-symbols-outlined"
+            <button class="bg-indigo-400 rounded-xl px-3 py-2 text-slate-50 material-symbols-outlined"
                 (click)="hangUp()">call_end</button>
         </div>
     </div>
     <div *ngIf="show_sidechat"
-        class="z-[600000] h-screen w-[500px] bg-red-50 dark:bg-slate-950 p-3 flex flex-col items-start justify-start">
+        class="z-[600000] h-screen w-[500px] bg-indigo-50 dark:bg-slate-950 p-3 flex flex-col items-start justify-start">
         <div class="max-h-[70px] flex w-full gap-2 items-center justify-center p-2">
             <div role="button" (click)="toggleSidechatTabs('chat')"
                 class="shadow-lg flex-grow rounded-xl text-center px-3 py-2 bg-slate-300 dark:bg-slate-950 text-slate-950 dark:text-slate-200">
