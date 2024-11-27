@@ -5,6 +5,7 @@ import { TermsComponent } from './pages/terms/terms.component';
 import { CanvasComponent } from './pages/canvas/canvas.component';
 import { MainLayoutComponent } from './components/shared/main-layout/main-layout.component';
 import { FaqComponent } from './pages/faq/faq.component';
+import { StreamingComponent } from './pages/streaming/streaming.component';
 
 export const routes: Routes = [
     {
@@ -18,6 +19,10 @@ export const routes: Routes = [
         {
           path: 'faq',
           component: FaqComponent,
+        },
+        {
+          path: 'stream',
+          component: StreamingComponent,
         },
         {
           path: 'lobby',
