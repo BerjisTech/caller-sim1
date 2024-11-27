@@ -107,7 +107,7 @@
         <div *ngIf="side_chat_tag == 'chat'"
             class="w-full flex flex-col justify-start items-start flex-grow relative gap-2">
             <div class="rounded-lg shadow-xl bg-white dark:bg-black p-2 self-stretch flex-grow w-full">
-                <div *ngFor="let msg of messages" class="w-full">
+                <div *ngFor="let msg of messages" class="w-full px-2">
                     <div
                         class="w-full self-stretch flex gap-2 {{ user_id == msg.user_id ? 'flex-row-reverse items-start justify-end' : 'flex-row items-end justify-start'}}">
                         <div *ngIf="!(user_id === msg.user_id)" class="'text-left">{{ msg.user_id }}</div>
@@ -116,7 +116,7 @@
                     </div>
                 </div>
             </div>
-            <div class="rounded-lg shadow-lg bg-white dark:bg-black h-[70px] w-full flex items-center justify-center">
+            <div class="px-2 rounded-lg shadow-lg bg-white dark:bg-black h-[70px] w-full flex items-center justify-center">
                 <span class="text-[20px]">😂</span>
                 <input class="p-2 bg-transparent text-dark dark:text-white flex-grow outline-none focus:outline-none"
                     type="text" [(ngModel)]="chat_message" placeholder="Type a message"
