@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 
 @Injectable({
@@ -9,6 +10,11 @@ export class StreamingService {
   private localStream: MediaStream | null = null;
   private socket!: Socket;
   public broadcasters: Array<{ id: string; name?: string }> = []; // Store broadcaster details
+
+  // Observable to track broadcasters
+  private broadcastersSubject = new BehaviorSubject<Array<{ id: string; name?: string }>>([]);
+  public broadcasters$: Observable<Array<{ id: string; name?: string }>> = this.broadcastersSubject.asObservable();
+
 
 
   constructor() {
@@ -21,6 +27,7 @@ export class StreamingService {
     // Listen for available broadcasters
     this.socket.on('broadcaster-available', (broadcasters) => {
       this.broadcasters = broadcasters;
+      this.broadcastersSubject.next(broadcasters);
     });
   }
 

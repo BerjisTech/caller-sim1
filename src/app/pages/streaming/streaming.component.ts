@@ -18,8 +18,13 @@ export class StreamingComponent implements OnInit {
   constructor(private streamingService: StreamingService) { }
 
   ngOnInit(): void {
-    this.streamingService.getAvailableBroadcasters()
-    this.broadcasters = this.streamingService.broadcasters;
+    // Subscribe to real-time updates
+    this.streamingService.broadcasters$.subscribe((broadcasters) => {
+      this.broadcasters = broadcasters;
+    });
+
+    // Request available broadcasters
+    this.streamingService.getAvailableBroadcasters();
   }
 
   async startBroadcast(): Promise<void> {
