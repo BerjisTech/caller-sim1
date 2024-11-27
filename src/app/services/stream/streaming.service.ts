@@ -30,7 +30,7 @@ export class StreamingService {
     });
   }
 
-  async startBroadcaster(videoElement: HTMLVideoElement) {
+  async startBroadcaster(videoElement: HTMLVideoElement, user_id: string) {
     this.localStream = await navigator.mediaDevices.getUserMedia({
       video: true,
       audio: true,
@@ -38,7 +38,7 @@ export class StreamingService {
 
     videoElement.srcObject = this.localStream;
 
-    this.socket.emit('start-stream');
+    this.socket.emit('start-stream', { user_id: user_id });
 
     this.socket.on('viewer-joined', ({ viewer_id }) => {
       this.createOffer(viewer_id);

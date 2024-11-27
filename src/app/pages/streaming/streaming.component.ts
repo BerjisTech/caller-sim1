@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { StreamingService } from '../../services/stream/streaming.service';
 import { CommonModule } from '@angular/common';
+import { faker } from '@faker-js/faker';
 
 @Component({
   selector: 'app-streaming',
@@ -29,7 +30,7 @@ export class StreamingComponent implements OnInit {
 
   async startBroadcast(): Promise<void> {
     if (this.localVideo) {
-      await this.streamingService.startBroadcaster(this.localVideo.nativeElement);
+      await this.streamingService.startBroadcaster(this.localVideo.nativeElement, faker.person.zodiacSign()+faker.animal.type());
     }
   }
 

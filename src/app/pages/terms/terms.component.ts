@@ -11,7 +11,7 @@ import { CalendarComponent } from "../../components/shared/calendar/calendar.com
 @Component({
   selector: 'app-terms',
   standalone: true,
-  imports: [CommonModule, NavComponent, TermComponent, TermDetailsComponent, CalendarComponent],
+  imports: [CommonModule, TermComponent, TermDetailsComponent, CalendarComponent],
   templateUrl: './terms.component.html',
   styleUrl: './terms.component.scss',
 })
