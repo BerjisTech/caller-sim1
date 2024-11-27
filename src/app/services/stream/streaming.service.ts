@@ -9,7 +9,6 @@ export class StreamingService {
   private peerConnections: Map<string, RTCPeerConnection> = new Map();
   private localStream: MediaStream | null = null;
   private socket!: Socket;
-  public broadcasters: Array<{ id: string; name?: string }> = []; // Store broadcaster details
 
   // Observable to track broadcasters
   private broadcastersSubject = new BehaviorSubject<Array<{ id: string; name?: string }>>([]);
@@ -26,7 +25,7 @@ export class StreamingService {
 
     // Listen for available broadcasters
     this.socket.on('broadcaster-available', (broadcasters) => {
-      this.broadcasters = broadcasters;
+      console.log('Broadcasters available:', broadcasters);
       this.broadcastersSubject.next(broadcasters);
     });
   }
