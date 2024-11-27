@@ -41,6 +41,7 @@ export class StreamingService {
     this.socket.emit('start-stream', { user_id: user_id });
 
     this.socket.on('viewer-joined', ({ viewer_id }) => {
+      console.log('Viewer joined:', viewer_id);
       this.createOffer(viewer_id);
     });
   }
@@ -88,6 +89,7 @@ export class StreamingService {
     };
 
     peerConnection.ontrack = (event) => {
+      console.log('Track received:', event.streams[0]);
       if (videoElement) {
         videoElement.srcObject = event.streams[0];
       }
