@@ -37,25 +37,22 @@ export class StreamingService {
   private setupSocketListeners(): void {
     this.socket.on('connect', () => {
       console.log('Connected to signaling server');
-      this.getAvailableBroadcasters();
+      // Add explicit request after connection
+      this.socket.emit('request-broadcasters');
     });
 
     this.socket.on('broadcaster-available', (broadcasters: Broadcaster[]) => {
-      console.log('Available broadcasters:', broadcasters);
+      console.log('Received broadcasters update:', broadcasters);
       this.broadcastersSubject.next(broadcasters);
     });
 
-    this.socket.on('stream-ice-candidate', async ({ sender_id, candidate }) => {
-      const peerConnection = this.peerConnections.get(sender_id);
-      if (peerConnection) {
-        try {
-          await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
-        } catch (error) {
-          console.error('Error adding ICE candidate:', error);
-        }
-      }
-    });
+    // Add periodic refresh of broadcaster list
+    setInterval(() => {
+      console.log('Requesting updated broadcaster list');
+      this.socket.emit('request-broadcasters');
+    }, 5000); // Every 5 seconds
   }
+
 
   async startBroadcaster(videoElement: HTMLVideoElement, userId: string): Promise<void> {
     try {

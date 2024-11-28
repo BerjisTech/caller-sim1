@@ -95,7 +95,7 @@ import { faker } from '@faker-js/faker';
 export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('localVideo', { static: true }) localVideo!: ElementRef<HTMLVideoElement>;
   @ViewChild('remoteVideo') remoteVideo!: ElementRef<HTMLVideoElement>;
-  
+
   broadcasters: Broadcaster[] = [];
   is_broadcasting = false;
   is_viewing = false;
@@ -108,12 +108,18 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.streamingService.broadcasters$.subscribe(
-      broadcasters => {
-        console.log('Received broadcasters:', broadcasters);
+    console.log('Component initialized');
+    this.streamingService.broadcasters$.subscribe((broadcasters) => {
+      try {
         this.broadcasters = broadcasters;
+        console.log('Received broadcasters in component:', broadcasters);
+      } catch (error: any) {
+        console.error('Failed to update broadcasters:', error);
       }
-    );
+    })
+
+    // Explicitly request broadcasters on init
+    this.streamingService.getAvailableBroadcasters();
   }
 
   ngAfterViewInit(): void {
@@ -124,50 +130,50 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
 
   async startBroadcast(): Promise<void> {
     this.error = null;
-    
+
     try {
       console.log('Starting broadcast...');
-      
+
       if (!this.localVideo) {
         throw new Error('Local video element not found');
       }
 
       console.log('Requesting media permissions...');
-      
+
       // First try to get the stream directly
       try {
         this.stream = await navigator.mediaDevices.getUserMedia({
           video: true,
           audio: true
         });
-        
+
         console.log('Media stream obtained:', this.stream);
         this.localVideo.nativeElement.srcObject = this.stream;
-        
+
         // Wait for the video to be ready
         await new Promise<void>((resolve) => {
           this.localVideo.nativeElement.onloadedmetadata = () => resolve();
         });
-        
+
         console.log('Local video ready, starting broadcaster...');
-        
+
         await this.streamingService.startBroadcaster(
           this.localVideo.nativeElement,
           this.userId
         );
-        
+
         this.is_broadcasting = true;
         console.log('Broadcasting started successfully');
       } catch (mediaError: any) {
         console.error('Media access error:', mediaError);
         throw new Error(`Failed to access camera/microphone: ${mediaError.message}`);
       }
-      
+
     } catch (error: any) {
       console.error('Broadcasting error:', error);
       this.error = error.message;
       this.is_broadcasting = false;
-      
+
       if (this.stream) {
         this.stream.getTracks().forEach(track => track.stop());
         this.stream = null;
@@ -177,7 +183,7 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
 
   async joinStream(broadcasterId: string): Promise<void> {
     this.error = null;
-    
+
     try {
       if (!this.remoteVideo) {
         throw new Error('Remote video element not found');
@@ -187,7 +193,7 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
         broadcasterId,
         this.remoteVideo.nativeElement
       );
-      
+
       this.is_viewing = true;
       console.log('Joined stream successfully');
     } catch (error: any) {
@@ -202,11 +208,11 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
       this.stream.getTracks().forEach(track => track.stop());
       this.stream = null;
     }
-    
+
     if (this.localVideo) {
       this.localVideo.nativeElement.srcObject = null;
     }
-    
+
     this.streamingService.cleanup();
     this.is_broadcasting = false;
     this.error = null;
