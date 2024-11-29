@@ -1,13 +1,20 @@
 <div class="flex flex-col gap-3 dark:text-slate-200">
   <div class="video-section">
-    <div class="local-video-container">
-      <h3>Your Video</h3>
+    <div [style.display]="(is_broadcasting) ? 'block' : 'none'" class="local-video-container">
+      <h3 class="flex items-center gap-3">Your Video <span class="text-sm text-gray-500 flex items-center gap-1"><span
+            class="material-symbols-outlined">groups</span>
+          {{ getBroadcasterByName(userId)?.viewerCount ?? 0 }}
+        </span></h3>
       <video #localVideo autoplay muted playsinline [style.display]="is_broadcasting ? 'block' : 'none'"></video>
       <div *ngIf="error" class="error-message">{{ error }}</div>
     </div>
 
-    <div class="remote-video-container" [style.display]="(is_viewing && broadcasters.length > 0) ? 'block' : 'none'">
-      <h3>Remote Stream</h3>
+    <div class="remote-video-container" [style.display]="(is_viewing && currentBroadcaster) ? 'block' : 'none'">
+      <h3 class="flex items-center gap-3">{{currentBroadcaster?.name ?? 'Remote Stream'}} <span
+          *ngIf="currentBroadcaster" class="flex items-center gap-1"><span
+            class="material-symbols-outlined">groups</span>
+          {{ currentBroadcaster.viewerCount ?? 0 }}
+        </span></h3>
       <video #remoteVideo autoplay playsinline></video>
     </div>
   </div>
@@ -32,7 +39,7 @@
       <li *ngFor="let broadcaster of broadcasters" class="flex items-center gap-3">
         <span>Broadcaster: {{ broadcaster.name || broadcaster.user_id }} ({{broadcaster.viewerCount}} watching)</span>
         <button class="p-2 bg-indigo-600 {{broadcaster.id}}" (click)="initiateStreamJoin(broadcaster.id)"
-          [disabled]="is_broadcasting || currentBroadcasterId == broadcaster.id">Join Stream</button>
+          [disabled]="is_broadcasting || currentBroadcaster?.id == broadcaster.id">Join Stream</button>
       </li>
     </ul>
   </div>

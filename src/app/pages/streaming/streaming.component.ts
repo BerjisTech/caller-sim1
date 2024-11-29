@@ -37,7 +37,7 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
         if (this.currentBroadcaster) {
           this.currentBroadcaster = broadcasters.find(b => b.id === this.currentBroadcaster?.id) || null;
         }
-        
+
         this.broadcasters = broadcasters;
         console.log('Received broadcasters in component:', broadcasters);
 
@@ -126,7 +126,7 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
     try {
       this.currentBroadcaster = this.broadcasters.find(b => b.id === broadcasterId) || null;
       this.currentBroadcasterId = broadcasterId;
-      
+
       if (!this.remoteVideo) {
         throw new Error('Remote video element reference not initialized');
       }
@@ -147,6 +147,11 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
       this.currentBroadcaster = null;
       this.currentBroadcasterId = '';
     }
+  }
+
+  getBroadcasterByName(broadcaster_name: string): Broadcaster | undefined {
+    console.log('Current broadcaster:', this.currentBroadcasterId);
+    return this.broadcasters.find(b => b.name === broadcaster_name);
   }
 
   async leaveStream(): Promise<void> {
