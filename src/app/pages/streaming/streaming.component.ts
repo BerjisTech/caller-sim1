@@ -135,6 +135,21 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  async leaveStream(): Promise<void> {
+    this.error = null;
+
+    try {
+      console.log('Leaving stream...');
+      await this.streamingService.leaveStream();
+      this.is_viewing = false;
+      console.log('Stream left successfully');
+    } catch (error: any) {
+      console.error('Failed to leave stream:', error);
+      this.error = `Failed to leave stream: ${error.message}`;
+      this.is_viewing = false;
+    }
+  }
+
   private cleanupStream(): void {
     if (this.stream) {
       this.stream.getTracks().forEach(track => track.stop());

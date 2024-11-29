@@ -246,4 +246,9 @@ export class StreamingService {
     // Don't disconnect the socket, just clean up the connections
     this.getAvailableBroadcasters();
   }
+
+  public leaveStream(): void {
+    this.socket.disconnect();
+    this.cleanupConnections();
+  }
 }
