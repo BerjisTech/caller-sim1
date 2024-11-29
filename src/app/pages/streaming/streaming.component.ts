@@ -148,6 +148,7 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
     this.streamingService.cleanup();
     this.is_broadcasting = false;
     this.error = null;
+    this.broadcasters = [];
     this.requestBroadcastersList();
   }
 

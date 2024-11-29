@@ -8,8 +8,8 @@
     <ul>
       <li *ngFor="let broadcaster of broadcasters">
         <span>Broadcaster: {{ broadcaster.name || broadcaster.user_id }}</span>
-        <button (click)="initiateStreamJoin(broadcaster.user_id)" 
-                [disabled]="is_broadcasting">Join Stream</button>
+        <button class="{{broadcaster.user_id}}" (click)="initiateStreamJoin(broadcaster.user_id)"
+          [disabled]="is_broadcasting">Join Stream</button>
       </li>
     </ul>
   </div>
@@ -17,14 +17,10 @@
   <div class="video-section">
     <div class="local-video-container">
       <h3>Your Video</h3>
-      <video #localVideo 
-             autoplay 
-             muted 
-             playsinline 
-             [style.display]="is_broadcasting ? 'block' : 'none'"></video>
+      <video #localVideo autoplay muted playsinline [style.display]="is_broadcasting ? 'block' : 'none'"></video>
       <div *ngIf="error" class="error-message">{{ error }}</div>
     </div>
-    
+
     <div class="remote-video-container" [style.display]="is_viewing ? 'block' : 'none'">
       <h3>Remote Stream</h3>
       <video #remoteVideo autoplay playsinline></video>
@@ -32,13 +28,11 @@
   </div>
 
   <div class="controls">
-    <button (click)="startBroadcast()" 
-            [disabled]="is_broadcasting || is_viewing">
+    <button (click)="startBroadcast()" [disabled]="is_broadcasting || is_viewing">
       <span *ngIf="!is_broadcasting">Go Live</span>
       <span *ngIf="is_broadcasting">Broadcasting...</span>
     </button>
-    <button (click)="stopBroadcast()" 
-            *ngIf="is_broadcasting">
+    <button (click)="stopBroadcast()" *ngIf="is_broadcasting">
       End Stream
     </button>
   </div>
