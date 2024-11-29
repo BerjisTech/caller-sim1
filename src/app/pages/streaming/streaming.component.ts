@@ -20,6 +20,7 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
   is_viewing = false;
   error: string | null = null;
   userId: string;
+  currentBroadcaster: Broadcaster | null = null;
   currentBroadcasterId!: string;
   private stream: MediaStream | null = null;
 
@@ -32,13 +33,11 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
     this.streamingService.broadcasters$.subscribe({
       next: (broadcasters) => {
         // check if broadcasters has currentBroadcasterId
-        if (this.currentBroadcasterId) {
-          const foundBroadcaster = broadcasters.find(b => b.id === this.currentBroadcasterId);
-          if (!foundBroadcaster) {
-            this.is_viewing = false;
-            this.currentBroadcasterId = '';
-          }
+        // Update current broadcaster info if we're viewing
+        if (this.currentBroadcaster) {
+          this.currentBroadcaster = broadcasters.find(b => b.id === this.currentBroadcaster?.id) || null;
         }
+        
         this.broadcasters = broadcasters;
         console.log('Received broadcasters in component:', broadcasters);
 
@@ -125,6 +124,9 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
     this.error = null;
 
     try {
+      this.currentBroadcaster = this.broadcasters.find(b => b.id === broadcasterId) || null;
+      this.currentBroadcasterId = broadcasterId;
+      
       if (!this.remoteVideo) {
         throw new Error('Remote video element reference not initialized');
       }
@@ -138,11 +140,12 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
       );
 
       console.log('Joined stream successfully');
-      this.currentBroadcasterId = broadcasterId;
     } catch (error: any) {
       console.error('Failed to join stream:', error);
       this.error = `Failed to join stream: ${error.message}`;
       this.is_viewing = false;
+      this.currentBroadcaster = null;
+      this.currentBroadcasterId = '';
     }
   }
 
@@ -181,6 +184,8 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
     this.is_broadcasting = false;
     this.error = null;
     this.broadcasters = [];
+    this.currentBroadcaster = null;
+    this.currentBroadcasterId = '';
     this.requestBroadcastersList();
     this.is_viewing = false;
   }
