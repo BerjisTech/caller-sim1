@@ -59,6 +59,11 @@ export class StreamingService {
       this.broadcastersSubject.next(broadcasters);
     });
 
+    this.socket.on('viewer-left', ({ viewer_id }) => {
+      console.log('Viewer left:', viewer_id);
+      this.cleanupConnection(viewer_id);
+    });
+
     this.socket.on('disconnect', () => {
       console.log('Socket disconnected');
       this.isConnected = false;
@@ -249,8 +254,8 @@ export class StreamingService {
     this.getAvailableBroadcasters();
   }
 
-  public leaveStream(): void {
+  public leaveStream(broadcaster_id: string): void {
     this.socket.disconnect();
-    this.cleanupConnections();
+    this.getAvailableBroadcasters();
   }
 }

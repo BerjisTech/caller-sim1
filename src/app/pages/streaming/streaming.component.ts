@@ -31,6 +31,14 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
     console.log('Component initialized');
     this.streamingService.broadcasters$.subscribe({
       next: (broadcasters) => {
+        // check if broadcasters has currentBroadcasterId
+        if (this.currentBroadcasterId) {
+          const foundBroadcaster = broadcasters.find(b => b.id === this.currentBroadcasterId);
+          if (!foundBroadcaster) {
+            this.is_viewing = false;
+            this.currentBroadcasterId = '';
+          }
+        }
         this.broadcasters = broadcasters;
         console.log('Received broadcasters in component:', broadcasters);
 
@@ -143,14 +151,14 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
 
     try {
       console.log('Leaving stream...');
-      await this.streamingService.leaveStream();
-      this.is_viewing = false;
+      await this.streamingService.leaveStream(this.currentBroadcasterId);
+      // this.is_viewing = false;
       this.currentBroadcasterId = '';
       console.log('Stream left successfully');
     } catch (error: any) {
       console.error('Failed to leave stream:', error);
       this.error = `Failed to leave stream: ${error.message}`;
-      this.is_viewing = false;
+      // this.is_viewing = false;
     }
   }
 
