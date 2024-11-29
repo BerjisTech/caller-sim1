@@ -1,22 +1,4 @@
-<div class="streaming-container">
-  <div class="broadcaster-list">
-    <h2>Available Broadcasters</h2>
-    <div *ngIf="broadcasters.length === 0" class="no-broadcasters">
-      No active broadcasters
-    </div>
-    <button (click)="requestBroadcastersList()">Request broadcasters list</button>
-    <ul>
-      <li *ngFor="let broadcaster of broadcasters">
-        <div>
-          {{broadcaster|json}}
-        </div>
-        <span>Broadcaster: {{ broadcaster.name || broadcaster.user_id }}</span>
-        <button class="p-2 bg-indigo-600 {{broadcaster.id}}" (click)="initiateStreamJoin(broadcaster.id)"
-          [disabled]="is_broadcasting">Join Stream {{broadcaster.user_id}}</button>
-      </li>
-    </ul>
-  </div>
-
+<div class="flex flex-col gap-3 dark:text-slate-200">
   <div class="video-section">
     <div class="local-video-container">
       <h3>Your Video</h3>
@@ -31,13 +13,26 @@
   </div>
 
   <div class="flex items-center gap-3">
-    <span>{{is_viewing}} | {{is_broadcasting}}</span>
     <button (click)="startBroadcast()" [disabled]="is_broadcasting || is_viewing">
       <span *ngIf="!is_broadcasting">Go Live</span>
       <span *ngIf="is_broadcasting">Broadcasting...</span>
     </button>
-    <button (click)="stopBroadcast()" *ngIf="is_broadcasting">
+    <button class="bg-red-300 text-slate-300 p-3 rounded-lg hover:bg-red-400" (click)="stopBroadcast()" *ngIf="is_broadcasting">
       End Stream
     </button>
+  </div>
+  <div class="broadcaster-list">
+    <h2>Available Broadcasters</h2>
+    <div *ngIf="broadcasters.length === 0" class="no-broadcasters">
+      No active broadcasters
+    </div>
+    <!-- <button (click)="requestBroadcastersList()">Request broadcasters list</button> -->
+    <ul>
+      <li *ngFor="let broadcaster of broadcasters" class="flex items-center gap-3">
+        <span>Broadcaster: {{ broadcaster.name || broadcaster.user_id }} ({{broadcaster.viewerCount}} watching)</span>
+        <button class="p-2 bg-indigo-600 {{broadcaster.id}}" (click)="initiateStreamJoin(broadcaster.id)"
+          [disabled]="is_broadcasting">Join Stream</button>
+      </li>
+    </ul>
   </div>
 </div>

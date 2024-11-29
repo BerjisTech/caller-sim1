@@ -8,6 +8,7 @@ export interface Broadcaster {
   user_id: string;
   socket_id: string;
   name?: string;
+  viewerCount?: number;
 }
 
 @Injectable({
