@@ -7,8 +7,8 @@
     <button (click)="requestBroadcastersList()">Request broadcasters list</button>
     <ul>
       <li *ngFor="let broadcaster of broadcasters">
-        <span>Broadcaster: {{ broadcaster.name || broadcaster.id }}</span>
-        <button (click)="initiateStreamJoin(broadcaster.id)" 
+        <span>Broadcaster: {{ broadcaster.name || broadcaster.user_id }}</span>
+        <button (click)="initiateStreamJoin(broadcaster.user_id)" 
                 [disabled]="is_broadcasting">Join Stream</button>
       </li>
     </ul>
