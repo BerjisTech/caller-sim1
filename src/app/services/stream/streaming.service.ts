@@ -17,6 +17,9 @@ export class StreamingService {
   private peerConnections: Map<string, RTCPeerConnection> = new Map();
   private localStream: MediaStream | null = null;
   private socket!: Socket;
+  private isConnected = false;
+  private currentBroadcasterId: string | null = null;
+
   private configuration = {
     iceServers: [
       { urls: 'stun:stun.l.google.com:19302' },
@@ -28,10 +31,16 @@ export class StreamingService {
   public broadcasters$ = this.broadcastersSubject.asObservable();
 
   constructor() {
-    // Initialize socket connection
+    this.initializeSocket();
+  }
+
+  private initializeSocket(): void {
     this.socket = io('/signal', {
       path: '/socket.io',
       transports: ['websocket'],
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000
     });
 
     this.setupSocketListeners();
@@ -40,7 +49,7 @@ export class StreamingService {
   private setupSocketListeners(): void {
     this.socket.on('connect', () => {
       console.log('Connected to signaling server');
-      // Add explicit request after connection
+      this.isConnected = true;
       this.socket.emit('request-broadcasters');
     });
 
@@ -49,13 +58,35 @@ export class StreamingService {
       this.broadcastersSubject.next(broadcasters);
     });
 
-    // Add periodic refresh of broadcaster list
-    // setInterval(() => {
-    //   console.log('Requesting updated broadcaster list');
-    //   this.socket.emit('request-broadcasters');
-    // }, 5000); // Every 5 seconds
-  }
+    this.socket.on('disconnect', () => {
+      console.log('Socket disconnected');
+      this.isConnected = false;
+      this.cleanupConnections();
+      this.socket.connect();
+    });
 
+    this.socket.on('stream-ice-candidate', async ({ candidate, sender_id }) => {
+      try {
+        const peerConnection = this.peerConnections.get(sender_id);
+        if (peerConnection && peerConnection.signalingState !== 'closed') {
+          await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+        }
+      } catch (error) {
+        console.error('Error handling ICE candidate:', error);
+      }
+    });
+
+    this.socket.on('stream-answer', async ({ answer, sender_id }) => {
+      try {
+        const peerConnection = this.peerConnections.get(sender_id);
+        if (peerConnection && peerConnection.signalingState !== 'closed') {
+          await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+        }
+      } catch (error) {
+        console.error('Error handling stream answer:', error);
+      }
+    });
+  }
 
   async startBroadcaster(videoElement: HTMLVideoElement, userId: string): Promise<void> {
     try {
@@ -71,11 +102,14 @@ export class StreamingService {
 
       this.socket.on('viewer-joined', ({ viewer_id }) => {
         console.log('New viewer joined:', viewer_id);
-        this.createBroadcastOffer(viewer_id);
+        if (!this.peerConnections.has(viewer_id)) {
+          this.createBroadcastOffer(viewer_id);
+        }
       });
 
     } catch (error) {
       console.error('Error starting broadcast:', error);
+      this.cleanupConnections();
       throw new Error('Failed to start broadcast');
     }
   }
@@ -83,23 +117,35 @@ export class StreamingService {
   async joinStream(broadcasterId: string, videoElement: HTMLVideoElement): Promise<void> {
     try {
       console.log('Joining stream:', broadcasterId);
-      this.socket.emit('join-stream', { broadcaster_id: broadcasterId });
+      this.currentBroadcasterId = broadcasterId;
 
+      // Clean up any existing connections before joining
+      this.cleanupConnections();
+
+      // Create new peer connection for this broadcast
       const peerConnection = this.createPeerConnection(broadcasterId, videoElement);
 
-      this.socket.on('stream-offer', async ({ offer, sender_id }) => {
+      // Set up offer handling before emitting join-stream
+      this.socket.off('stream-offer').on('stream-offer', async ({ offer, sender_id }) => {
         try {
-          await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
-          const answer = await peerConnection.createAnswer();
-          await peerConnection.setLocalDescription(answer);
-          this.socket.emit('stream-answer', { target_id: sender_id, answer });
+          if (peerConnection.signalingState !== 'closed') {
+            await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+            const answer = await peerConnection.createAnswer();
+            await peerConnection.setLocalDescription(answer);
+            this.socket.emit('stream-answer', { target_id: sender_id, answer });
+          }
         } catch (error) {
           console.error('Error handling stream offer:', error);
+          this.cleanupConnections();
+          throw new Error('Failed to process stream offer');
         }
       });
 
+      this.socket.emit('join-stream', { broadcaster_id: broadcasterId });
+
     } catch (error) {
       console.error('Error joining stream:', error);
+      this.cleanupConnections();
       throw new Error('Failed to join stream');
     }
   }
@@ -120,6 +166,7 @@ export class StreamingService {
 
     } catch (error) {
       console.error('Error creating broadcast offer:', error);
+      this.cleanupConnections();
     }
   }
 
@@ -135,23 +182,52 @@ export class StreamingService {
       }
     };
 
-    peerConnection.ontrack = (event) => {
-      console.log('Track received:', event.streams[0]);
-      if (videoElement && event.streams[0]) {
-        videoElement.srcObject = event.streams[0];
-      }
-    };
+    if (videoElement) {
+      peerConnection.ontrack = (event) => {
+        console.log('Track received:', event.streams[0]);
+        if (videoElement && event.streams[0]) {
+          videoElement.srcObject = event.streams[0];
+        }
+      };
+    }
 
     peerConnection.oniceconnectionstatechange = () => {
       console.log('ICE Connection State:', peerConnection.iceConnectionState);
+      if (peerConnection.iceConnectionState === 'failed' ||
+        peerConnection.iceConnectionState === 'closed') {
+        this.cleanupConnection(targetId);
+      }
     };
 
     this.peerConnections.set(targetId, peerConnection);
     return peerConnection;
   }
 
+  private cleanupConnection(targetId: string): void {
+    const connection = this.peerConnections.get(targetId);
+    if (connection) {
+      if (connection.signalingState !== 'closed') {
+        connection.close();
+      }
+      this.peerConnections.delete(targetId);
+    }
+  }
+
+  private cleanupConnections(): void {
+    this.peerConnections.forEach((connection, id) => {
+      this.cleanupConnection(id);
+    });
+    this.peerConnections.clear();
+  }
+
   public getAvailableBroadcasters(): void {
-    this.socket.emit('request-broadcasters');
+    if (this.isConnected) {
+      console.log('Requesting updated broadcaster list');
+      this.socket.emit('request-broadcasters');
+    } else {
+      console.log('Socket not connected, attempting to reconnect...');
+      this.socket.connect();
+    }
   }
 
   public cleanup(): void {
@@ -160,14 +236,14 @@ export class StreamingService {
       this.localStream = null;
     }
 
-    this.peerConnections.forEach(connection => {
-      connection.close();
-    });
-    this.peerConnections.clear();
-
-    if (this.socket) {
+    if (this.isConnected) {
       this.socket.disconnect();
     }
+
+    this.cleanupConnections();
+    this.currentBroadcasterId = null;
+
+    // Don't disconnect the socket, just clean up the connections
     this.getAvailableBroadcasters();
   }
 }

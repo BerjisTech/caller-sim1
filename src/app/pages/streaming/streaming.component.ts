@@ -34,9 +34,10 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
         console.log('Received broadcasters in component:', broadcasters);
 
         // // if broadcaster list is empty, clean up the stream
-        // if (broadcasters.length === 0) {
-        //   this.cleanupStream();
-        // }
+        if (broadcasters.length === 0) {
+          // this.cleanupStream();
+          this.is_viewing = false;
+        }
       },
       error: (error) => {
         console.error('Failed to update broadcasters:', error);
@@ -48,7 +49,10 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   requestBroadcastersList(): void {
+    // Request the list of available broadcasters
+    console.log('Requesting broadcasters list...');
     this.streamingService.getAvailableBroadcasters();
+
   }
 
   ngAfterViewInit(): void {
