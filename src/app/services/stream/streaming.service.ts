@@ -28,7 +28,7 @@ export class StreamingService {
     // Initialize socket connection
     this.socket = io('/signal', {
       path: '/socket.io',
-      transports: ['websocket']
+      transports: ['websocket'],
     });
 
     this.setupSocketListeners();
