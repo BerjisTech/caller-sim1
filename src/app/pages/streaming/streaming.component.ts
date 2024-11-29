@@ -7,94 +7,13 @@ import { faker } from '@faker-js/faker';
   selector: 'app-streaming',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <div class="streaming-container">
-      <div class="broadcaster-list">
-        <h2>Available Broadcasters</h2>
-        <div *ngIf="broadcasters.length === 0" class="no-broadcasters">
-          No active broadcasters
-        </div>
-        <ul>
-          <li *ngFor="let broadcaster of broadcasters">
-            <span>Broadcaster: {{ broadcaster.name || broadcaster.id }}</span>
-            <button (click)="joinStream(broadcaster.id)" 
-                    [disabled]="is_broadcasting">Join Stream</button>
-          </li>
-        </ul>
-      </div>
-
-      <div class="video-section">
-        <div class="local-video-container">
-          <h3>Your Video</h3>
-          <video #localVideo 
-                 autoplay 
-                 muted 
-                 playsinline 
-                 [style.display]="is_broadcasting ? 'block' : 'none'"></video>
-          <div *ngIf="error" class="error-message">{{ error }}</div>
-        </div>
-        
-        <div class="remote-video-container" *ngIf="is_viewing">
-          <h3>Remote Stream</h3>
-          <video #remoteVideo autoplay playsinline></video>
-        </div>
-      </div>
-
-      <div class="controls">
-        <button (click)="startBroadcast()" 
-                [disabled]="is_broadcasting || is_viewing">
-          {{ is_broadcasting ? 'Broadcasting...' : 'Start Broadcasting' }}
-        </button>
-        <button (click)="stopBroadcast()" 
-                *ngIf="is_broadcasting">
-          Stop Broadcasting
-        </button>
-      </div>
-    </div>
-  `,
-  styles: [`
-    .streaming-container {
-      padding: 20px;
-    }
-    
-    .video-section {
-      display: flex;
-      gap: 20px;
-      margin: 20px 0;
-    }
-    
-    video {
-      width: 100%;
-      max-width: 400px;
-      background: #000;
-      border-radius: 8px;
-    }
-    
-    .error-message {
-      color: red;
-      margin-top: 10px;
-    }
-    
-    .controls {
-      display: flex;
-      gap: 10px;
-    }
-    
-    button {
-      padding: 8px 16px;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    
-    button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-  `]
+  templateUrl: './streaming.component.html',
+  styleUrls: ['./streaming.component.scss'],
+  providers: [StreamingService]
 })
 export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('localVideo', { static: true }) localVideo!: ElementRef<HTMLVideoElement>;
-  @ViewChild('remoteVideo') remoteVideo!: ElementRef<HTMLVideoElement>;
+  @ViewChild('remoteVideo', { static: true }) remoteVideo!: ElementRef<HTMLVideoElement>;
 
   broadcasters: Broadcaster[] = [];
   is_broadcasting = false;
@@ -109,23 +28,34 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnInit(): void {
     console.log('Component initialized');
-    this.streamingService.broadcasters$.subscribe((broadcasters) => {
-      try {
+    this.streamingService.broadcasters$.subscribe({
+      next: (broadcasters) => {
         this.broadcasters = broadcasters;
         console.log('Received broadcasters in component:', broadcasters);
-      } catch (error: any) {
-        console.error('Failed to update broadcasters:', error);
-      }
-    })
 
-    // Explicitly request broadcasters on init
+        // if broadcaster list is empty, clean up the stream
+        if (broadcasters.length === 0) {
+          this.cleanupStream();
+        }
+      },
+      error: (error) => {
+        console.error('Failed to update broadcasters:', error);
+        this.error = `Failed to get broadcasters: ${error.message}`;
+      }
+    });
+
+    this.streamingService.getAvailableBroadcasters();
+  }
+
+  requestBroadcastersList(): void {
     this.streamingService.getAvailableBroadcasters();
   }
 
   ngAfterViewInit(): void {
-    if (this.localVideo) {
-      console.log('Local video element initialized');
-    }
+    console.log('Video elements initialized:', {
+      local: !!this.localVideo,
+      remote: !!this.remoteVideo
+    });
   }
 
   async startBroadcast(): Promise<void> {
@@ -140,7 +70,6 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
 
       console.log('Requesting media permissions...');
 
-      // First try to get the stream directly
       try {
         this.stream = await navigator.mediaDevices.getUserMedia({
           video: true,
@@ -150,9 +79,10 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
         console.log('Media stream obtained:', this.stream);
         this.localVideo.nativeElement.srcObject = this.stream;
 
-        // Wait for the video to be ready
-        await new Promise<void>((resolve) => {
-          this.localVideo.nativeElement.onloadedmetadata = () => resolve();
+        await new Promise<void>((resolve, reject) => {
+          const video = this.localVideo.nativeElement;
+          video.onloadedmetadata = () => resolve();
+          video.onerror = (e) => reject(new Error(`Video loading failed: ${video.error?.message || 'Unknown error'}`));
         });
 
         console.log('Local video ready, starting broadcaster...');
@@ -173,28 +103,26 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
       console.error('Broadcasting error:', error);
       this.error = error.message;
       this.is_broadcasting = false;
-
-      if (this.stream) {
-        this.stream.getTracks().forEach(track => track.stop());
-        this.stream = null;
-      }
+      this.cleanupStream();
     }
   }
 
-  async joinStream(broadcasterId: string): Promise<void> {
+  async initiateStreamJoin(broadcasterId: string): Promise<void> {
     this.error = null;
-
+    
     try {
       if (!this.remoteVideo) {
-        throw new Error('Remote video element not found');
+        throw new Error('Remote video element reference not initialized');
       }
 
+      this.is_viewing = true;
+      console.log('Joining stream for broadcaster:', broadcasterId);
+      
       await this.streamingService.joinStream(
         broadcasterId,
         this.remoteVideo.nativeElement
       );
 
-      this.is_viewing = true;
       console.log('Joined stream successfully');
     } catch (error: any) {
       console.error('Failed to join stream:', error);
@@ -203,7 +131,8 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  stopBroadcast(): void {
+  private cleanupStream(): void {
+    this.is_viewing = false;
     if (this.stream) {
       this.stream.getTracks().forEach(track => track.stop());
       this.stream = null;
@@ -212,7 +141,10 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.localVideo) {
       this.localVideo.nativeElement.srcObject = null;
     }
+  }
 
+  stopBroadcast(): void {
+    this.cleanupStream();
     this.streamingService.cleanup();
     this.is_broadcasting = false;
     this.error = null;

@@ -1,38 +1,45 @@
 <div class="streaming-container">
-    <div class="broadcaster-list">
-      <h2>Available Broadcasters</h2>
-      <div *ngIf="broadcasters.length === 0" class="no-broadcasters">
-        No active broadcasters
-      </div>
-      <ul>
-        <li *ngFor="let broadcaster of broadcasters">
-          <span>Broadcaster: {{ broadcaster.name || broadcaster.id }}</span>
-          <button (click)="joinStream(broadcaster.id)" 
-                  [disabled]="is_broadcasting">Join Stream</button>
-        </li>
-      </ul>
+  <div class="broadcaster-list">
+    <h2>Available Broadcasters</h2>
+    <div *ngIf="broadcasters.length === 0" class="no-broadcasters">
+      No active broadcasters
     </div>
+    <button (click)="requestBroadcastersList()">Request broadcasters list</button>
+    <ul>
+      <li *ngFor="let broadcaster of broadcasters">
+        <span>Broadcaster: {{ broadcaster.name || broadcaster.id }}</span>
+        <button (click)="initiateStreamJoin(broadcaster.id)" 
+                [disabled]="is_broadcasting">Join Stream</button>
+      </li>
+    </ul>
+  </div>
 
-    <div class="video-section">
-      <div class="local-video-container" *ngIf="is_broadcasting">
-        <h3>Your Broadcast</h3>
-        <video #localVideo autoplay muted playsinline></video>
-      </div>
-      
-      <div class="remote-video-container" *ngIf="isViewing">
-        <h3>Remote Stream</h3>
-        <video #remoteVideo autoplay playsinline></video>
-      </div>
+  <div class="video-section">
+    <div class="local-video-container">
+      <h3>Your Video</h3>
+      <video #localVideo 
+             autoplay 
+             muted 
+             playsinline 
+             [style.display]="is_broadcasting ? 'block' : 'none'"></video>
+      <div *ngIf="error" class="error-message">{{ error }}</div>
     </div>
-
-    <div class="controls">
-      <button (click)="startBroadcast()" 
-              [disabled]="is_broadcasting || isViewing">
-        Start Broadcasting
-      </button>
-      <button (click)="stopBroadcast()" 
-              *ngIf="is_broadcasting">
-        Stop Broadcasting
-      </button>
+    
+    <div class="remote-video-container" [style.display]="is_viewing ? 'block' : 'none'">
+      <h3>Remote Stream</h3>
+      <video #remoteVideo autoplay playsinline></video>
     </div>
   </div>
+
+  <div class="controls">
+    <button (click)="startBroadcast()" 
+            [disabled]="is_broadcasting || is_viewing">
+      <span *ngIf="!is_broadcasting">Go Live</span>
+      <span *ngIf="is_broadcasting">Broadcasting...</span>
+    </button>
+    <button (click)="stopBroadcast()" 
+            *ngIf="is_broadcasting">
+      End Stream
+    </button>
+  </div>
+</div>

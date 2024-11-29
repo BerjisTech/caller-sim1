@@ -47,10 +47,10 @@ export class StreamingService {
     });
 
     // Add periodic refresh of broadcaster list
-    setInterval(() => {
-      console.log('Requesting updated broadcaster list');
-      this.socket.emit('request-broadcasters');
-    }, 5000); // Every 5 seconds
+    // setInterval(() => {
+    //   console.log('Requesting updated broadcaster list');
+    //   this.socket.emit('request-broadcasters');
+    // }, 5000); // Every 5 seconds
   }
 
 
