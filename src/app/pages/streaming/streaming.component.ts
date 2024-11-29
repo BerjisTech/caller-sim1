@@ -109,7 +109,7 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
 
   async initiateStreamJoin(broadcasterId: string): Promise<void> {
     this.error = null;
-    
+
     try {
       if (!this.remoteVideo) {
         throw new Error('Remote video element reference not initialized');
@@ -117,7 +117,7 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
 
       this.is_viewing = true;
       console.log('Joining stream for broadcaster:', broadcasterId);
-      
+
       await this.streamingService.joinStream(
         broadcasterId,
         this.remoteVideo.nativeElement
@@ -148,6 +148,7 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
     this.streamingService.cleanup();
     this.is_broadcasting = false;
     this.error = null;
+    this.requestBroadcastersList();
   }
 
   ngOnDestroy(): void {
