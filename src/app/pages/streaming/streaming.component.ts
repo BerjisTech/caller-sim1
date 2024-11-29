@@ -113,6 +113,7 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   async initiateStreamJoin(broadcasterId: string): Promise<void> {
+    this.leaveStream();
     this.error = null;
 
     try {
