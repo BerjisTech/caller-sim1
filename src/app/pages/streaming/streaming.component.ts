@@ -33,10 +33,10 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
         this.broadcasters = broadcasters;
         console.log('Received broadcasters in component:', broadcasters);
 
-        // if broadcaster list is empty, clean up the stream
-        if (broadcasters.length === 0) {
-          this.cleanupStream();
-        }
+        // // if broadcaster list is empty, clean up the stream
+        // if (broadcasters.length === 0) {
+        //   this.cleanupStream();
+        // }
       },
       error: (error) => {
         console.error('Failed to update broadcasters:', error);
@@ -132,7 +132,6 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private cleanupStream(): void {
-    this.is_viewing = false;
     if (this.stream) {
       this.stream.getTracks().forEach(track => track.stop());
       this.stream = null;
@@ -141,6 +140,8 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.localVideo) {
       this.localVideo.nativeElement.srcObject = null;
     }
+    this.requestBroadcastersList();
+    this.is_viewing = false;
   }
 
   stopBroadcast(): void {
@@ -150,6 +151,7 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
     this.error = null;
     this.broadcasters = [];
     this.requestBroadcastersList();
+    this.is_viewing = false;
   }
 
   ngOnDestroy(): void {

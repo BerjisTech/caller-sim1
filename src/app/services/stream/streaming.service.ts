@@ -3,6 +3,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 
 export interface Broadcaster {
+  id: string;
   viewers: Set<string>;
   user_id: string;
   socket_id: string;
@@ -167,5 +168,6 @@ export class StreamingService {
     if (this.socket) {
       this.socket.disconnect();
     }
+    this.getAvailableBroadcasters();
   }
 }

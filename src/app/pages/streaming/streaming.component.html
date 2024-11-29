@@ -7,9 +7,12 @@
     <button (click)="requestBroadcastersList()">Request broadcasters list</button>
     <ul>
       <li *ngFor="let broadcaster of broadcasters">
+        <div>
+          {{broadcaster|json}}
+        </div>
         <span>Broadcaster: {{ broadcaster.name || broadcaster.user_id }}</span>
-        <button class="{{broadcaster.user_id}}" (click)="initiateStreamJoin(broadcaster.user_id)"
-          [disabled]="is_broadcasting">Join Stream</button>
+        <button class="p-2 bg-indigo-600 {{broadcaster.id}}" (click)="initiateStreamJoin(broadcaster.id)"
+          [disabled]="is_broadcasting">Join Stream {{broadcaster.user_id}}</button>
       </li>
     </ul>
   </div>
@@ -21,13 +24,14 @@
       <div *ngIf="error" class="error-message">{{ error }}</div>
     </div>
 
-    <div class="remote-video-container" [style.display]="is_viewing ? 'block' : 'none'">
+    <div class="remote-video-container" [style.display]="(is_viewing && broadcasters.length > 0) ? 'block' : 'none'">
       <h3>Remote Stream</h3>
       <video #remoteVideo autoplay playsinline></video>
     </div>
   </div>
 
-  <div class="controls">
+  <div class="flex items-center gap-3">
+    <span>{{is_viewing}} | {{is_broadcasting}}</span>
     <button (click)="startBroadcast()" [disabled]="is_broadcasting || is_viewing">
       <span *ngIf="!is_broadcasting">Go Live</span>
       <span *ngIf="is_broadcasting">Broadcasting...</span>
