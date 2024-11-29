@@ -143,6 +143,7 @@ export class StreamingService {
       });
 
       this.socket.emit('join-stream', { broadcaster_id: broadcasterId });
+      this.currentBroadcasterId = broadcasterId;
 
     } catch (error) {
       console.error('Error joining stream:', error);

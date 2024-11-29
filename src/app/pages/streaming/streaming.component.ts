@@ -20,6 +20,7 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
   is_viewing = false;
   error: string | null = null;
   userId: string;
+  currentBroadcasterId!: string;
   private stream: MediaStream | null = null;
 
   constructor(private streamingService: StreamingService) {
@@ -128,6 +129,7 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
       );
 
       console.log('Joined stream successfully');
+      this.currentBroadcasterId = broadcasterId;
     } catch (error: any) {
       console.error('Failed to join stream:', error);
       this.error = `Failed to join stream: ${error.message}`;
@@ -142,6 +144,7 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
       console.log('Leaving stream...');
       await this.streamingService.leaveStream();
       this.is_viewing = false;
+      this.currentBroadcasterId = '';
       console.log('Stream left successfully');
     } catch (error: any) {
       console.error('Failed to leave stream:', error);

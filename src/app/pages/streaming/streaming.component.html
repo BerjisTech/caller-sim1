@@ -17,7 +17,8 @@
       <span *ngIf="!is_broadcasting">Go Live</span>
       <span *ngIf="is_broadcasting">Broadcasting...</span>
     </button>
-    <button class="bg-red-300 text-slate-300 p-3 rounded-lg hover:bg-red-400" (click)="stopBroadcast()" *ngIf="is_broadcasting">
+    <button class="bg-red-300 text-slate-300 p-3 rounded-lg hover:bg-red-400" (click)="stopBroadcast()"
+      *ngIf="is_broadcasting">
       End Stream
     </button>
   </div>
@@ -31,7 +32,7 @@
       <li *ngFor="let broadcaster of broadcasters" class="flex items-center gap-3">
         <span>Broadcaster: {{ broadcaster.name || broadcaster.user_id }} ({{broadcaster.viewerCount}} watching)</span>
         <button class="p-2 bg-indigo-600 {{broadcaster.id}}" (click)="initiateStreamJoin(broadcaster.id)"
-          [disabled]="is_broadcasting">Join Stream</button>
+          [disabled]="is_broadcasting || currentBroadcasterId == broadcaster.id">Join Stream</button>
       </li>
     </ul>
   </div>
