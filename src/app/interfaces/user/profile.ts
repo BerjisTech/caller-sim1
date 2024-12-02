@@ -20,7 +20,7 @@ export interface Profile {
 }
 
 export const defaultProfile: Profile = {
-  user_id: generateBrowserBasedId(),
+  user_id: Math.random().toString(36).substring(2, 15),
   is_anonymous: true,
   is_authenticated: false,
   is_superuser: false,
@@ -32,17 +32,3 @@ export const defaultProfile: Profile = {
   full_name: faker.person.fullName(),
   avatar: faker.image.avatar(),
 };
-
-function generateBrowserBasedId(): string {
-  // Generate new ID if not found in localStorage
-  const userAgent = navigator.userAgent; // Browser user agent string
-  const platform = navigator.hardwareConcurrency || 'unknown'; // Number of logical processors
-  const languages = navigator.languages.join(','); // User's preferred languages
-  const screenResolution = `${window.screen.width}x${window.screen.height}`; // Screen resolution (e.g., '1920x1080')
-  const deviceMemory = (navigator as any).deviceMemory || 'unknown'; // Device memory in GB (if available)
-  const timestamp = Date.now().toString(); // Precise timestamp for uniqueness
-
-  // Combine the components to make the ID more unique across devices
-  const idString = `${userAgent}-${platform}-${languages}-${screenResolution}-${deviceMemory}-${timestamp}`;
-  return btoa(idString).substring(0, 12); // Encode in base64 and shorten to the first 12 characters
-}
