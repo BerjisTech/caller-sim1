@@ -20,7 +20,7 @@
   </div>
 
   <div class="flex items-center gap-3">
-    <button (click)="startBroadcast()" [disabled]="is_broadcasting || is_viewing">
+    <button (click)="startBroadcast()" [disabled]="is_broadcasting || is_viewing" class="bg-indigo-800 text-slate-300 p-3 rounded-lg hover:bg-indigo-700">
       <span *ngIf="!is_broadcasting">Go Live</span>
       <span *ngIf="is_broadcasting">Broadcasting...</span>
     </button>
@@ -29,18 +29,36 @@
       End Stream
     </button>
   </div>
+
+
   <div class="broadcaster-list">
     <h2>Available Broadcasters</h2>
     <div *ngIf="broadcasters.length === 0" class="no-broadcasters">
       No active broadcasters
     </div>
-    <!-- <button (click)="requestBroadcastersList()">Request broadcasters list</button> -->
-    <ul>
-      <li *ngFor="let broadcaster of broadcasters" class="flex items-center gap-3">
-        <span>Broadcaster: {{ broadcaster.name || broadcaster.user_id }} ({{broadcaster.viewerCount}} watching)</span>
-        <button class="p-2 bg-indigo-600 {{broadcaster.id}}" (click)="initiateStreamJoin(broadcaster.id)"
-          [disabled]="is_broadcasting || currentBroadcaster?.id == broadcaster.id">Join Stream</button>
-      </li>
-    </ul>
+    <!-- Live streams list -->
+    <div class="flex flex-wrap items-start justify-between p-3 gap-2 w-full">
+      <div *ngFor="let broadcaster of broadcasters; let index" role="button" tabindex={{index}}
+        (click)="!is_broadcasting && currentBroadcaster?.id !== broadcaster.id && initiateStreamJoin(broadcaster.id)"
+        class="{{broadcaster.id}} overflow-hidden relative flex items-end justify-center w-[300px] h-[300px] border border-solid border-slate-400 dark:border-slate-950 rounded-lg">
+        <div
+          class="p-2 flex flex-wrap items-start justify-start gap-2 bg-gradient-to-t from-black via-red to-transparent w-full max-h-2/3">
+          <div class="w-full">
+            <span class="text-xs rounded-xl bg-indigo-500 text-indigo-950 px-2 py-1">{{broadcaster.viewerCount}}
+              watching</span>
+          </div>
+          <div class="rounded-full bg-indigo-950 w-[50px] h-[50px] bgcenter bg-cover bg-no-repeat"></div>
+          <div class="flex-grow flex flex-col gap-2 items-start justify-start">
+            <span class="font-bold">Stream decsription goes here</span>
+            <span>Stream catergory</span>
+            <span class="text-sm">{{ broadcaster.name || broadcaster.user_id }}</span>
+            <div class="flex gap-2 w-fll flex-wrap">
+              <span *ngFor="let tag of [0,1,2,3,4]"
+                class="text-xs rounded-xl bg-indigo-500 text-indigo-950 px-2 py-1">Tag</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
