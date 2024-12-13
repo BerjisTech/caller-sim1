@@ -1,26 +1,49 @@
 <div class="flex flex-col gap-3 dark:text-slate-200">
-  <div class="video-section">
-    <div [style.display]="(is_broadcasting) ? 'block' : 'none'" class="local-video-container">
-      <h3 class="flex items-center gap-3">Your Video <span class="text-sm text-gray-500 flex items-center gap-1"><span
-            class="material-symbols-outlined">groups</span>
+  <div [style.display]="(is_viewing || is_broadcasting) ? 'flex' : 'none'" class="items-start justify-between relative video-section">
+    <div class="w-full">
+
+      <div class="w-full lg:w-[calc(100vw-310px)] h-[calc(100vh-100px)] flex items-start justify-center">
+        <video #localVideo autoplay muted playsinline [style.display]="is_broadcasting ? 'block' : 'none'"
+          class="w-full h-full max-w-full lg:max-w-[calc(100vw-310px)] max-h-[calc(100vh-100px)]"></video>
+
+        <video [style.display]="is_viewing ? 'block' : 'none'" #remoteVideo autoplay playsinline controls
+          class="(is_viewing && currentBroadcaster) ? 'block' : 'none'"
+          class="w-full h-full max-w-full lg:max-w-[calc(100vw-310px)] max-h-[calc(100vh-100px)]"></video>
+      </div>
+
+      <div *ngIf="error" class="error-message">{{ error }}</div>
+
+      <h3 *ngIf="is_broadcasting" class="flex items-center gap-3">Your Video <span
+          class="text-sm text-gray-500 flex items-center gap-1"><span class="material-symbols-outlined">groups</span>
           {{ getBroadcasterByName(userId)?.viewerCount ?? 0 }}
         </span></h3>
-      <video #localVideo autoplay muted playsinline [style.display]="is_broadcasting ? 'block' : 'none'"></video>
-      <div *ngIf="error" class="error-message">{{ error }}</div>
-    </div>
 
-    <div class="remote-video-container" [style.display]="(is_viewing && currentBroadcaster) ? 'block' : 'none'">
       <h3 class="flex items-center gap-3">{{currentBroadcaster?.name ?? 'Remote Stream'}} <span
-          *ngIf="currentBroadcaster" class="flex items-center gap-1"><span
+          *ngIf="currentBroadcaster && !is_broadcasting" class="flex items-center gap-1"><span
             class="material-symbols-outlined">groups</span>
           {{ currentBroadcaster.viewerCount ?? 0 }}
         </span></h3>
-      <video #remoteVideo autoplay playsinline></video>
+    </div>
+
+    <div
+      class="hidden absolute lg:relative h-[calc(100vh-100px)] w-full lg:w-[300px] bottom-0 __flex flex-col items-start justify-start">
+      <div *ngFor="let viewer of currentBroadcaster?.viewers" class="flex-grow">
+        {{viewer|json}}
+      </div>
+      <div class="px-2 rounded-lg shadow-lg bg-white dark:bg-black h-[70px] w-full flex items-center justify-center">
+        <span class="text-[20px]">😂</span>
+        <input class="p-2 bg-transparent text-dark dark:text-white flex-grow outline-none focus:outline-none"
+          type="text" [(ngModel)]="chat_message" placeholder="Type a message"
+          (keyup.enter)="sendMessage(chat_message); chat_message = ''" />
+        <span (click)="sendMessage(chat_message); chat_message = ''" class="text-[20px] material-symbols-outlined"
+          role="button">send</span>
+      </div>
     </div>
   </div>
 
   <div class="flex items-center gap-3">
-    <button (click)="startBroadcast()" [disabled]="is_broadcasting || is_viewing" class="bg-indigo-800 text-slate-300 p-3 rounded-lg hover:bg-indigo-700">
+    <button (click)="startBroadcast()" [disabled]="is_broadcasting || is_viewing"
+      class="bg-indigo-800 text-slate-300 p-3 rounded-lg hover:bg-indigo-700">
       <span *ngIf="!is_broadcasting">Go Live</span>
       <span *ngIf="is_broadcasting">Broadcasting...</span>
     </button>
@@ -30,14 +53,13 @@
     </button>
   </div>
 
-
   <div class="broadcaster-list">
     <h2>Available Broadcasters</h2>
     <div *ngIf="broadcasters.length === 0" class="no-broadcasters">
       No active broadcasters
     </div>
     <!-- Live streams list -->
-    <div class="flex flex-wrap items-start justify-between p-3 gap-2 w-full">
+    <div class="flex flex-wrap items-start justify-start p-3 gap-2 w-full">
       <div *ngFor="let broadcaster of broadcasters; let index" role="button" tabindex={{index}}
         (click)="!is_broadcasting && currentBroadcaster?.id !== broadcaster.id && initiateStreamJoin(broadcaster.id)"
         class="{{broadcaster.id}} overflow-hidden relative flex items-end justify-center w-[300px] h-[300px] border border-solid border-slate-400 dark:border-slate-950 rounded-lg">

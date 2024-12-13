@@ -2,11 +2,16 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } fr
 import { CommonModule } from '@angular/common';
 import { StreamingService, Broadcaster } from '../../services/stream/streaming.service';
 import { faker } from '@faker-js/faker';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-streaming',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    FormsModule
+  ],
   templateUrl: './streaming.component.html',
   styleUrls: ['./streaming.component.scss'],
   providers: [StreamingService]
@@ -15,13 +20,14 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('localVideo', { static: true }) localVideo!: ElementRef<HTMLVideoElement>;
   @ViewChild('remoteVideo', { static: true }) remoteVideo!: ElementRef<HTMLVideoElement>;
 
-  broadcasters: Broadcaster[] = [];
-  is_broadcasting = false;
-  is_viewing = false;
-  error: string | null = null;
-  userId: string;
-  currentBroadcaster: Broadcaster | null = null;
-  currentBroadcasterId!: string;
+  public broadcasters: Broadcaster[] = [];
+  public is_broadcasting = false;
+  public is_viewing = false;
+  public error: string | null = null;
+  public userId: string;
+  public currentBroadcaster: Broadcaster | null = null;
+  public currentBroadcasterId!: string;
+  public chat_message: string = '';
   private stream: MediaStream | null = null;
 
   constructor(private streamingService: StreamingService) {
@@ -193,6 +199,10 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
     this.currentBroadcasterId = '';
     this.requestBroadcastersList();
     this.is_viewing = false;
+  }
+
+  sendMessage(message: string) {
+
   }
 
   ngOnDestroy(): void {
