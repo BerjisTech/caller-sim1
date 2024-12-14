@@ -4,9 +4,9 @@ import { io, Socket } from 'socket.io-client';
 
 export interface Broadcaster {
   id: string;
-  viewers: Set<string>;
-  user_id: string;
-  socket_id: string;
+  viewers?: Set<string>;
+  user_id?: string;
+  socket_id?: string;
   name?: string;
   viewerCount?: number;
 }
@@ -15,6 +15,12 @@ export interface Broadcaster {
   providedIn: 'root'
 })
 export class StreamingService {
+  private messagesSubject = new BehaviorSubject<Array<{ user_id: string; message: string }>>([]);
+  public messages$ = this.messagesSubject.asObservable();
+
+  private reactionsSubject = new BehaviorSubject<Array<{ user_id: string; reaction: string; left: number }>>([]);
+  public reactions$ = this.reactionsSubject.asObservable();
+
   private peerConnections: Map<string, RTCPeerConnection> = new Map();
   private localStream: MediaStream | null = null;
   private socket!: Socket;
@@ -257,5 +263,53 @@ export class StreamingService {
   public leaveStream(broadcaster_id: string): void {
     this.socket.disconnect();
     this.getAvailableBroadcasters();
+  }
+
+  /**
+   * Send a chat message to the signaling server.
+   * @param message - The chat message to send.
+   */
+  sendMessage(message: string, broadcaster_id: string) {
+    console.log(`Sending chat message: ${message}`);
+    this.socket.emit('stream-chat', { message, broadcaster_id });
+  }
+
+  /**
+   * Listen for the 'chatMessage' event from the signaling server.
+   * @returns An Observable that emits the chat message data.
+   */
+  onChatMessage(): Observable<{ user_id: string; message: string }> {
+    return new Observable((observer) => {
+      this.socket.on('stream-chat', (data) => {
+        if (!data || !data.message) {
+          console.error('Invalid chat message received:', data);
+          return;
+        }
+        console.log('Received chat message:', data);
+        observer.next(data);
+      });
+    });
+  }
+
+  /**
+   * Send a reaction to the signaling server.
+   * @param reaction - The reaction to send.
+   */
+  sendReaction(reaction: string) {
+    console.log(`Sending reaction: ${reaction}`);
+    this.socket.emit('stream-reaction', reaction);
+  }
+
+  /**
+   * Listen for the 'receiveReaction' event from the signaling server.
+   * @returns An Observable that emits the reaction data.
+   */
+  onReceiveReaction(): Observable<{ user_id: string; reaction: string; left: number }> {
+    return new Observable((observer) => {
+      this.socket.on('receiveReaction', (data) => {
+        console.log('Received reaction:', data);
+        observer.next(data);
+      });
+    });
   }
 }

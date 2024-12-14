@@ -24,14 +24,25 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
   public is_broadcasting = false;
   public is_viewing = false;
   public error: string | null = null;
-  public userId: string;
-  public currentBroadcaster: Broadcaster | null = null;
+  public user_id: string;
+  public currentBroadcaster: Broadcaster = {
+    id: '',
+    user_id: '',
+    socket_id: '',
+    name: '',
+    viewerCount: 0
+  };
   public currentBroadcasterId!: string;
   public chat_message: string = '';
+  public messages: Array<{ user_id: string; message: string }> = [];
+  public reactions: Array<{ user_id: string; reaction: string; left: number }> =
+    [];
+  public show_reactions: boolean = false;
+
   private stream: MediaStream | null = null;
 
   constructor(private streamingService: StreamingService) {
-    this.userId = `${faker.person.zodiacSign()}_${faker.animal.type()}`;
+    this.user_id = `${faker.person.zodiacSign()}_${faker.animal.type()}`;
   }
 
   ngOnInit(): void {
@@ -40,8 +51,18 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
       next: (broadcasters) => {
         // check if broadcasters has currentBroadcasterId
         // Update current broadcaster info if we're viewing
-        if (this.currentBroadcaster) {
-          this.currentBroadcaster = broadcasters.find(b => b.id === this.currentBroadcaster?.id) || null;
+        if (this.is_broadcasting) {
+          let temp_broadcaster = this.getBroadcasterByName(this.user_id);
+          if (temp_broadcaster && temp_broadcaster.id !== '') {
+            this.currentBroadcaster = temp_broadcaster;
+            this.currentBroadcasterId = temp_broadcaster.id;
+          }
+        } else if (this.currentBroadcaster && this.currentBroadcaster.id !== '') {
+          let temp_broadcaster = broadcasters.find(b => b.id === this.currentBroadcaster.id);
+          if (temp_broadcaster && temp_broadcaster.id !== '') {
+            this.currentBroadcaster = temp_broadcaster;
+            this.currentBroadcasterId = temp_broadcaster.id;
+          }
         }
 
         this.broadcasters = broadcasters;
@@ -59,7 +80,29 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     });
 
+
     this.streamingService.getAvailableBroadcasters();
+
+    this.streamingService.onChatMessage().subscribe({
+      next: (message) => {
+        console.log('Chat message in StreamingComponent:', message);
+        this.messages.push(message);
+      },
+      error: (error) => {
+        console.error('Error receiving chat message:', error);
+      }
+    });
+
+    this.streamingService.onReceiveReaction().subscribe({
+      next: (reaction) => {
+        console.log('Reaction in StreamingComponent:', reaction);
+        this.reactions.push(reaction);
+      },
+      error: (error) => {
+        console.error('Error receiving reactions:', error);
+      }
+    });
+
   }
 
   requestBroadcastersList(): void {
@@ -107,11 +150,13 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
 
         await this.streamingService.startBroadcaster(
           this.localVideo.nativeElement,
-          this.userId
-        );
+          this.user_id
+        )
 
         this.is_broadcasting = true;
         console.log('Broadcasting started successfully');
+
+        this.streamingService.getAvailableBroadcasters();
       } catch (mediaError: any) {
         console.error('Media access error:', mediaError);
         throw new Error(`Failed to access camera/microphone: ${mediaError.message}`);
@@ -130,8 +175,6 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
     this.error = null;
 
     try {
-      this.currentBroadcaster = this.broadcasters.find(b => b.id === broadcasterId) || null;
-      this.currentBroadcasterId = broadcasterId;
 
       if (!this.remoteVideo) {
         throw new Error('Remote video element reference not initialized');
@@ -143,21 +186,30 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
       await this.streamingService.joinStream(
         broadcasterId,
         this.remoteVideo.nativeElement
-      );
+      ).then(() => {
+        let temp_broadcaster = this.broadcasters.find(b => b.id === broadcasterId);
+        if (temp_broadcaster && temp_broadcaster.id !== '') this.currentBroadcaster = temp_broadcaster;
+        this.currentBroadcasterId = broadcasterId;
+      })
 
       console.log('Joined stream successfully');
     } catch (error: any) {
       console.error('Failed to join stream:', error);
       this.error = `Failed to join stream: ${error.message}`;
       this.is_viewing = false;
-      this.currentBroadcaster = null;
       this.currentBroadcasterId = '';
     }
   }
 
   getBroadcasterByName(broadcaster_name: string): Broadcaster | undefined {
-    console.log('Current broadcaster:', this.currentBroadcasterId);
-    return this.broadcasters.find(b => b.name === broadcaster_name);
+    let broadcaster = this.broadcasters.find(b => b.name === broadcaster_name);
+    console.log(`getBroadcasterByName (${broadcaster_name}) Found: `, broadcaster);
+    console.log('Broadcasters:', this.broadcasters);
+    // if (this.is_broadcasting && this.user_id == broadcaster?.name) {
+    //   this.currentBroadcaster = broadcaster;
+    //   this.currentBroadcasterId = broadcaster.id;
+    // }
+    return broadcaster;
   }
 
   async leaveStream(): Promise<void> {
@@ -195,14 +247,30 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
     this.is_broadcasting = false;
     this.error = null;
     this.broadcasters = [];
-    this.currentBroadcaster = null;
     this.currentBroadcasterId = '';
     this.requestBroadcastersList();
     this.is_viewing = false;
   }
 
   sendMessage(message: string) {
+    this.streamingService.sendMessage(message, this.currentBroadcasterId);
+    this.messages.push({ user_id: this.user_id, message });
+  }
 
+  sendReaction(reaction: string) {
+    this.streamingService.sendReaction(reaction);
+  }
+
+  randomSeconds() {
+    const min = 1;
+    const max = 3;
+    const random = Math.random() * (max - min) + min;
+    return `${random}s`;
+  }
+
+  getRandomPosition() {
+    // [style.left.%]
+    return Math.random() * 100;
   }
 
   ngOnDestroy(): void {

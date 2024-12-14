@@ -1,6 +1,14 @@
 <div class="flex flex-col gap-3 dark:text-slate-200">
-  <div [style.display]="(is_viewing || is_broadcasting) ? 'flex' : 'none'" class="items-start justify-between relative video-section">
+  <div [style.display]="(is_viewing || is_broadcasting) ? 'flex' : 'none'"
+    class="items-end justify-between relative video-section">
     <div class="w-full">
+
+      <div class="fixed top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
+        <div *ngFor="let reaction of reactions" class="text-white reaction text-[70px]"
+          [style.left.%]="getRandomPosition()" [style.animation-duration]="randomSeconds()">
+          {{ reaction.reaction }}
+        </div>
+      </div>
 
       <div class="w-full lg:w-[calc(100vw-310px)] h-[calc(100vh-100px)] flex items-start justify-center">
         <video #localVideo autoplay muted playsinline [style.display]="is_broadcasting ? 'block' : 'none'"
@@ -13,12 +21,31 @@
 
       <div *ngIf="error" class="error-message">{{ error }}</div>
 
+      <div class="relative flex items-center justify-center text-[30px]">
+        <div *ngIf="show_reactions"
+          class="absolute w-auto whitespace-nowrap px-2 table bottom-[110%] left-[50%] transform translate-x-[-50%] shadow-xl rounded-xl bg-indigo-100 dark:bg-indigo-950">
+          <span class="inline" role="button" (click)="sendReaction('😂')">😂</span>
+          <span class="inline" role="button" (click)="sendReaction('😍')">😍</span>
+          <span class="inline" role="button" (click)="sendReaction('👏')">👏</span>
+          <span class="inline" role="button" (click)="sendReaction('👍')">👍</span>
+          <span class="inline" role="button" (click)="sendReaction('🔥')">🔥</span>
+          <span class="inline" role="button" (click)="sendReaction('🎉')">🎉</span>
+          <span class="inline" role="button" (click)="sendReaction('👋')">👋</span>
+          <span class="inline" role="button" (click)="sendReaction('🙌')">🙌</span>
+          <span class="inline" role="button" (click)="sendReaction('🤩')">🤩</span>
+          <span class="inline" role="button" (click)="sendReaction('🤔')">🤔</span>
+          <span class="inline" role="button" (click)="sendReaction('🤗')">🤗</span>
+          <span class="inline" role="button" (click)="sendReaction('🤭')">🤭</span>
+        </div>
+        <button (click)="show_reactions = !show_reactions">😂</button>
+      </div>
+
       <h3 *ngIf="is_broadcasting" class="flex items-center gap-3">Your Video <span
           class="text-sm text-gray-500 flex items-center gap-1"><span class="material-symbols-outlined">groups</span>
-          {{ getBroadcasterByName(userId)?.viewerCount ?? 0 }}
+          {{ getBroadcasterByName(user_id)?.viewerCount ?? 0 }}
         </span></h3>
 
-      <h3 class="flex items-center gap-3">{{currentBroadcaster?.name ?? 'Remote Stream'}} <span
+      <h3 class="flex items-center gap-3">{{currentBroadcaster.name ?? 'Remote Stream'}} <span
           *ngIf="currentBroadcaster && !is_broadcasting" class="flex items-center gap-1"><span
             class="material-symbols-outlined">groups</span>
           {{ currentBroadcaster.viewerCount ?? 0 }}
@@ -26,9 +53,20 @@
     </div>
 
     <div
-      class="hidden absolute lg:relative h-[calc(100vh-100px)] w-full lg:w-[300px] bottom-0 __flex flex-col items-start justify-start">
-      <div *ngFor="let viewer of currentBroadcaster?.viewers" class="flex-grow">
-        {{viewer|json}}
+      class="absolute lg:relative h-[calc((100vh-100px)/2)] w-full lg:w-[300px] bottom-0 flex flex-col items-start justify-end bg-gradient-to-t from-white dark:from-black to-transparent">
+      {{ user_id}}
+      {{ currentBroadcaster|json }}
+      {{ broadcasters|json }}
+      {{ messages|json }}
+      <div class="rounded-lg shadow-xl w-full">
+        <div *ngFor="let message of messages" class="w-full px-2">
+          <div
+            class="w-full self-stretch flex gap-2 {{ user_id == message.user_id ? 'flex-row-reverse items-start justify-end' : 'flex-row items-end justify-start'}}">
+            <div *ngIf="!(user_id === message.user_id)" class="'text-left">{{ message.user_id }}</div>
+            <div class="{{user_id == message.user_id?'text-right':'text-left'}} flex-grow">{{ message.message }}
+            </div>
+          </div>
+        </div>
       </div>
       <div class="px-2 rounded-lg shadow-lg bg-white dark:bg-black h-[70px] w-full flex items-center justify-center">
         <span class="text-[20px]">😂</span>
@@ -61,7 +99,7 @@
     <!-- Live streams list -->
     <div class="flex flex-wrap items-start justify-start p-3 gap-2 w-full">
       <div *ngFor="let broadcaster of broadcasters; let index" role="button" tabindex={{index}}
-        (click)="!is_broadcasting && currentBroadcaster?.id !== broadcaster.id && initiateStreamJoin(broadcaster.id)"
+        (click)="!is_broadcasting && currentBroadcaster.id !== broadcaster.id && initiateStreamJoin(broadcaster.id)"
         class="{{broadcaster.id}} overflow-hidden relative flex items-end justify-center w-[300px] h-[300px] border border-solid border-slate-400 dark:border-slate-950 rounded-lg">
         <div
           class="p-2 flex flex-wrap items-start justify-start gap-2 bg-gradient-to-t from-black via-red to-transparent w-full max-h-2/3">
