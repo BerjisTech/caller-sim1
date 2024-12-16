@@ -39,6 +39,9 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
   public reactions: Array<{ name: string; reaction: string; left: number }> =
     [];
   public show_reactions: boolean = false;
+  public randomSeconds!: () => string;
+  public getRandomPosition!: () => number;
+  public getRandomTailwindColorClass!: () => string;
 
   private stream: MediaStream | null = null;
 
@@ -106,6 +109,11 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
         console.error('Error receiving reactions:', error);
       }
     });
+
+    // Fix: Invoke methods instead of assigning references
+    this.randomSeconds = this.contentService.randomSeconds;
+    this.getRandomPosition = this.contentService.getRandomPosition;
+    this.getRandomTailwindColorClass = this.contentService.getRandomTailwindColorClass;
 
   }
 
@@ -269,12 +277,8 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
     this.streamingService.sendReaction(reaction);
   }
 
-  randomSeconds = () => this.contentService.randomSeconds;
-  getRandomPosition = () => this.contentService.getRandomPosition;
-  getRandomTailwindColorClass = () => this.contentService.getRandomTailwindColorClass;
-
   ngOnDestroy(): void {
     this.stopBroadcast();
   }
-  
+
 }
