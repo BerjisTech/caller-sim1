@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { StreamingService, Broadcaster, Viewer } from '../../services/stream/streaming.service';
 import { faker } from '@faker-js/faker';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { ContentService } from '../../services/content/content.service';
 
 @Component({
   selector: 'app-streaming',
@@ -14,7 +15,7 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
   ],
   templateUrl: './streaming.component.html',
   styleUrls: ['./streaming.component.scss'],
-  providers: [StreamingService]
+  providers: [StreamingService, ContentService]
 })
 export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('localVideo', { static: true }) localVideo!: ElementRef<HTMLVideoElement>;
@@ -41,7 +42,10 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private stream: MediaStream | null = null;
 
-  constructor(private streamingService: StreamingService) {
+  constructor(
+    private streamingService: StreamingService,
+    private contentService: ContentService
+  ) {
     this.user_id = `${faker.person.zodiacSign()}_${faker.animal.type()}`;
   }
 
@@ -265,19 +269,12 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
     this.streamingService.sendReaction(reaction);
   }
 
-  randomSeconds() {
-    const min = 1;
-    const max = 3;
-    const random = Math.random() * (max - min) + min;
-    return `${random}s`;
-  }
-
-  getRandomPosition() {
-    // [style.left.%]
-    return Math.random() * 100;
-  }
+  randomSeconds = () => this.contentService.randomSeconds;
+  getRandomPosition = () => this.contentService.getRandomPosition;
+  getRandomTailwindColorClass = () => this.contentService.getRandomTailwindColorClass;
 
   ngOnDestroy(): void {
     this.stopBroadcast();
   }
+  
 }

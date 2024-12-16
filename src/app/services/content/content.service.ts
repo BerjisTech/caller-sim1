@@ -8,7 +8,7 @@ export class ContentService {
   private darkModeSubsject = new BehaviorSubject<boolean>(false);
   public dark_mode$ = this.darkModeSubsject.asObservable();
 
-  constructor() {}
+  constructor() { }
 
   setDarkMode(value: boolean) {
     this.darkModeSubsject.next(value);
@@ -27,5 +27,31 @@ export class ContentService {
 
   copyContent(content: string) {
     navigator.clipboard.writeText(content);
+  }
+
+  randomSeconds() {
+    const min = 1;
+    const max = 3;
+    const random = Math.random() * (max - min) + min;
+    return `${random}s`;
+  }
+
+  getRandomPosition() {
+    // [style.left.%]
+    return Math.random() * 100;
+  }
+
+  getRandomTailwindColorClass() {
+    const colors = [
+      'bg-red-500',
+      'bg-yellow-500',
+      'bg-green-500',
+      'bg-blue-500',
+      'bg-indigo-500',
+      'bg-purple-500',
+      'bg-pink-500',
+    ];
+    const randomIndex = Math.floor(Math.random() * colors.length);
+    return colors[randomIndex];
   }
 }
