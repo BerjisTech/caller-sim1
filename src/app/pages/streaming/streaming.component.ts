@@ -20,6 +20,7 @@ import { ContentService } from '../../services/content/content.service';
 export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('localVideo', { static: true }) localVideo!: ElementRef<HTMLVideoElement>;
   @ViewChild('remoteVideo', { static: true }) remoteVideo!: ElementRef<HTMLVideoElement>;
+  @ViewChild('messageContainer', { static: true }) messageContainer!: ElementRef<HTMLDivElement>;
 
   public broadcasters: Broadcaster[] = [];
   public is_broadcasting = false;
@@ -44,6 +45,7 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
   public getRandomTailwindColorClass!: () => string;
 
   private stream: MediaStream | null = null;
+  private autoScrollEnabled: boolean = true;
 
   constructor(
     private streamingService: StreamingService,
@@ -94,6 +96,10 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
       next: (message) => {
         console.log('Chat message in StreamingComponent:', message);
         this.messages.push(message);
+
+        if (this.autoScrollEnabled) {
+          this.scrollToBottom();
+        }
       },
       error: (error) => {
         console.error('Error receiving chat message:', error);
@@ -129,6 +135,19 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
       local: !!this.localVideo,
       remote: !!this.remoteVideo
     });
+
+    this.messageContainer.nativeElement.addEventListener('scroll', () => {
+      const { scrollTop, scrollHeight, clientHeight } = this.messageContainer.nativeElement;
+      this.autoScrollEnabled = scrollHeight - scrollTop === clientHeight;
+    });
+  }
+
+  private scrollToBottom(): void {
+    try {
+      this.messageContainer.nativeElement.scrollTop = this.messageContainer.nativeElement.scrollHeight;
+    } catch (err) {
+      console.error('Failed to scroll to bottom:', err);
+    }
   }
 
   async startBroadcast(): Promise<void> {
@@ -274,6 +293,9 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
   sendMessage(message: string) {
     this.streamingService.sendMessage(message, this.currentBroadcasterId, this.user_id);
     this.messages.push({ name: this.user_id, message });
+    if (this.autoScrollEnabled) {
+      this.scrollToBottom();
+    }
   }
 
   sendReaction(reaction: string) {

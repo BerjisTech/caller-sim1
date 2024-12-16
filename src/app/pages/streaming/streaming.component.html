@@ -55,7 +55,7 @@
     <div
       class="absolute lg:relative h-[calc((100vh-100px)/2)] w-full lg:w-[300px] bottom-0 flex flex-col items-start justify-end bg-gradient-to-t from-white dark:from-black to-transparent">
 
-      <div class="rounded-lg shadow-xl w-full">
+      <div class="rounded-lg shadow-xl w-full h-[300px] overflow-y-auto hidden_scrollbar" #messageContainer>
         <div *ngFor="let message of messages" class="w-full px-2">
           <div
             class="w-full mx-[2px]">

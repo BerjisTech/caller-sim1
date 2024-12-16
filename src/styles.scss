@@ -65,3 +65,11 @@
         background-color: #991b1b;
     }
 }
+
+.hidden_scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
