@@ -186,6 +186,9 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
     this.leaveStream();
     this.error = null;
 
+    this.messages = [];
+    this.reactions = [];
+
     try {
 
       if (!this.remoteVideo) {
