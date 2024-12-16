@@ -42,7 +42,7 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
   public show_reactions: boolean = false;
   public randomSeconds!: () => string;
   public getRandomPosition!: () => number;
-  public getRandomTailwindColorClass!: () => string;
+  public getRandomTailwindColorClass!: (type: 'text'|'bg') => string;
 
   private stream: MediaStream | null = null;
   private autoScrollEnabled: boolean = true;

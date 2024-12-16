@@ -41,15 +41,15 @@ export class ContentService {
     return Math.random() * 100;
   }
 
-  getRandomTailwindColorClass() {
+  getRandomTailwindColorClass(type: 'text' | 'bg') {
     const colors = [
-      'red-500',
-      'yellow-500',
-      'green-500',
-      'blue-500',
-      'indigo-500',
-      'purple-500',
-      'pink-500',
+      `${type}-red-500`,
+      `${type}-yellow-500`,
+      `${type}-green-500`,
+      `${type}-blue-500`,
+      `${type}-indigo-500`,
+      `${type}-purple-500`,
+      `${type}-pink-500`,
     ];
     const randomIndex = Math.floor(Math.random() * colors.length);
     return colors[randomIndex];
