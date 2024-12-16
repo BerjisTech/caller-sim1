@@ -59,9 +59,8 @@
         <div *ngFor="let message of messages" class="w-full px-2">
           <div
             class="w-full self-stretch flex gap-2 {{ user_id == message.name ? 'flex-row-reverse items-start justify-end' : 'flex-row items-end justify-start'}}">
-            <div *ngIf="!(user_id === message.name)" class="px-2 rounded-xl text-left {{getRandomTailwindColorClass()}} text-white">{{ message.name }}</div>
-            <div class="{{user_id == message.name ? 'text-right' : 'text-left'}} flex-grow">{{ message.message }}
-            </div>
+            <span *ngIf="!(user_id === message.name)" class="px-2 rounded-xl text-left {{getRandomTailwindColorClass()}} text-white">{{ message.name }}</span>
+            <span class="{{user_id == message.name ? 'text-right' : 'text-left'}} flex-grow">{{ message.message }}</span>
           </div>
         </div>
       </div>
