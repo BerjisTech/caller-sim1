@@ -4,11 +4,16 @@ import { io, Socket } from 'socket.io-client';
 
 export interface Broadcaster {
   id: string;
-  viewers?: Set<string>;
+  viewers?: Viewer[];
   user_id?: string;
   socket_id?: string;
   name?: string;
   viewerCount?: number;
+}
+
+export interface Viewer {
+  id: string;
+  name: string;
 }
 
 @Injectable({
@@ -126,7 +131,7 @@ export class StreamingService {
     }
   }
 
-  async joinStream(broadcasterId: string, videoElement: HTMLVideoElement): Promise<void> {
+  async joinStream(broadcasterId: string, videoElement: HTMLVideoElement, viewer: Viewer): Promise<void> {
     try {
       console.log('Joining stream:', broadcasterId);
       this.currentBroadcasterId = broadcasterId;
@@ -153,7 +158,7 @@ export class StreamingService {
         }
       });
 
-      this.socket.emit('join-stream', { broadcaster_id: broadcasterId });
+      this.socket.emit('join-stream', { broadcaster_id: broadcasterId, viewer: viewer });
       this.currentBroadcasterId = broadcasterId;
 
     } catch (error) {
@@ -269,16 +274,16 @@ export class StreamingService {
    * Send a chat message to the signaling server.
    * @param message - The chat message to send.
    */
-  sendMessage(message: string, broadcaster_id: string) {
+  sendMessage(message: string, broadcaster_id: string, name: string) {
     console.log(`Sending chat message: ${message}`);
-    this.socket.emit('stream-chat', { message, broadcaster_id });
+    this.socket.emit('stream-chat', { message, broadcaster_id, name });
   }
 
   /**
    * Listen for the 'chatMessage' event from the signaling server.
    * @returns An Observable that emits the chat message data.
    */
-  onChatMessage(): Observable<{ user_id: string; message: string }> {
+  onChatMessage(): Observable<{ name: string; message: string }> {
     return new Observable((observer) => {
       this.socket.on('stream-chat', (data) => {
         if (!data || !data.message) {
@@ -304,7 +309,7 @@ export class StreamingService {
    * Listen for the 'receiveReaction' event from the signaling server.
    * @returns An Observable that emits the reaction data.
    */
-  onReceiveReaction(): Observable<{ user_id: string; reaction: string; left: number }> {
+  onReceiveReaction(): Observable<{ name: string; reaction: string; left: number }> {
     return new Observable((observer) => {
       this.socket.on('receiveReaction', (data) => {
         console.log('Received reaction:', data);

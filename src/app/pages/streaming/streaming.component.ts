@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { StreamingService, Broadcaster } from '../../services/stream/streaming.service';
+import { StreamingService, Broadcaster, Viewer } from '../../services/stream/streaming.service';
 import { faker } from '@faker-js/faker';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
@@ -34,8 +34,8 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
   };
   public currentBroadcasterId!: string;
   public chat_message: string = '';
-  public messages: Array<{ user_id: string; message: string }> = [];
-  public reactions: Array<{ user_id: string; reaction: string; left: number }> =
+  public messages: Array<{ name: string; message: string }> = [];
+  public reactions: Array<{ name: string; reaction: string; left: number }> =
     [];
   public show_reactions: boolean = false;
 
@@ -185,7 +185,11 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
 
       await this.streamingService.joinStream(
         broadcasterId,
-        this.remoteVideo.nativeElement
+        this.remoteVideo.nativeElement,
+        {
+          id: '',
+          name: this.user_id
+        }
       ).then(() => {
         let temp_broadcaster = this.broadcasters.find(b => b.id === broadcasterId);
         if (temp_broadcaster && temp_broadcaster.id !== '') this.currentBroadcaster = temp_broadcaster;
@@ -253,8 +257,8 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   sendMessage(message: string) {
-    this.streamingService.sendMessage(message, this.currentBroadcasterId);
-    this.messages.push({ user_id: this.user_id, message });
+    this.streamingService.sendMessage(message, this.currentBroadcasterId, this.user_id);
+    this.messages.push({ name: this.user_id, message });
   }
 
   sendReaction(reaction: string) {
