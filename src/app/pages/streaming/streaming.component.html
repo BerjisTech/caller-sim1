@@ -59,7 +59,7 @@
         <div *ngFor="let message of messages" class="w-full px-2">
           <div
             class="w-full mx-[2px]">
-            <span class="px-2 rounded-xl text-left {{getRandomTailwindColorClass()}} text-white">{{ message.name }}</span>
+            <span class="px-2 rounded-xl text-left bg-indigo-950 dark:bg-indigo-500 text-white">{{ message.name }}</span>
             <span class="{{user_id == message.name ? 'text-right' : 'text-left'}} flex-grow">{{ message.message }}</span>
           </div>
         </div>
