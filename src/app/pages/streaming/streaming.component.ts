@@ -293,9 +293,10 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
   sendMessage(message: string) {
     this.streamingService.sendMessage(message, this.currentBroadcasterId, this.user_id);
     this.messages.push({ name: this.user_id, message });
-    if (this.autoScrollEnabled) {
-      this.scrollToBottom();
-    }
+    // if (this.autoScrollEnabled) {
+    //   this.scrollToBottom();
+    // }
+    this.scrollToBottom();
   }
 
   sendReaction(reaction: string) {

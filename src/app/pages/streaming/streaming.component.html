@@ -12,11 +12,11 @@
 
       <div class="w-full lg:w-[calc(100vw-310px)] h-[calc(100vh-100px)] flex items-start justify-center">
         <video #localVideo autoplay muted playsinline [style.display]="is_broadcasting ? 'block' : 'none'"
-          class="w-full h-full max-w-full lg:max-w-[calc(100vw-310px)] max-h-[calc(100vh-100px)]"></video>
+          class="w-full h-full max-w-full lg:max-w-[calc(100vw-310px)] max-h-[calc(100vh-100px)] transform -scale-x-1"></video>
 
         <video [style.display]="is_viewing ? 'block' : 'none'" #remoteVideo autoplay playsinline controls
           class="(is_viewing && currentBroadcaster) ? 'block' : 'none'"
-          class="w-full h-full max-w-full lg:max-w-[calc(100vw-310px)] max-h-[calc(100vh-100px)]"></video>
+          class="w-full h-full max-w-full lg:max-w-[calc(100vw-310px)] max-h-[calc(100vh-100px)] transform -scale-x-1"></video>
       </div>
 
       <div *ngIf="error" class="error-message">{{ error }}</div>
