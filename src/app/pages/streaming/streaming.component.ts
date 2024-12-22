@@ -90,8 +90,8 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
         if (broadcasters.length === 0) {
           // this.cleanupStream();
           this.is_viewing = false;
+          this.setupPreviews();
         }
-        this.setupPreviews();
       });
 
     // Subscribe to preview stream states
@@ -139,7 +139,10 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
   ngAfterViewInit(): void {
 
     // Initial preview setup
-    this.setupPreviews();
+    if (this.broadcasters.length === 0) {
+      // this.cleanupStream();
+      this.setupPreviews();
+    }
 
     console.log('Video elements initialized:', {
       local: !!this.localVideo,
@@ -158,6 +161,7 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
     this.streamingService.getAvailableBroadcasters();
 
   }
+
   private setupPreviews() {
     this.broadcasters.forEach(broadcaster => {
       const videoElement = document.querySelector(
