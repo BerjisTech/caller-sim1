@@ -20,6 +20,7 @@ export interface Viewer {
 @Injectable({
   providedIn: 'root'
 })
+
 export class StreamingService {
   private messagesSubject = new BehaviorSubject<Array<{ user_id: string; message: string }>>([]);
   public messages$ = this.messagesSubject.asObservable();
