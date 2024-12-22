@@ -4,6 +4,8 @@ import { StreamingService, Broadcaster, Viewer } from '../../services/stream/str
 import { faker } from '@faker-js/faker';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { ContentService } from '../../services/content/content.service';
+import { Subject, takeUntil } from 'rxjs';
+import { PreviewStreamService } from '../../services/stream/preview-stream.service';
 
 @Component({
   selector: 'app-streaming',
@@ -15,12 +17,18 @@ import { ContentService } from '../../services/content/content.service';
   ],
   templateUrl: './streaming.component.html',
   styleUrls: ['./streaming.component.scss'],
-  providers: [StreamingService, ContentService]
+  providers: [StreamingService, ContentService, PreviewStreamService]
 })
+
 export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('localVideo', { static: true }) localVideo!: ElementRef<HTMLVideoElement>;
   @ViewChild('remoteVideo', { static: true }) remoteVideo!: ElementRef<HTMLVideoElement>;
   @ViewChild('messageContainer', { static: true }) messageContainer!: ElementRef<HTMLDivElement>;
+
+  private destroy$ = new Subject<void>();
+  private previewStates = new Map<string, string>();
+  private stream: MediaStream | null = null;
+  private autoScrollEnabled: boolean = true;
 
   public broadcasters: Broadcaster[] = [];
   public is_broadcasting = false;
@@ -42,13 +50,11 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
   public show_reactions: boolean = false;
   public randomSeconds!: () => string;
   public getRandomPosition!: () => number;
-  public getRandomTailwindColorClass!: (type: 'text'|'bg') => string;
-
-  private stream: MediaStream | null = null;
-  private autoScrollEnabled: boolean = true;
+  public getRandomTailwindColorClass!: (type: 'text' | 'bg') => string;
 
   constructor(
     private streamingService: StreamingService,
+    private previewService: PreviewStreamService,
     private contentService: ContentService
   ) {
     this.user_id = `${faker.person.zodiacSign()}_${faker.animal.type()}`;
@@ -56,8 +62,11 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnInit(): void {
     console.log('Component initialized');
-    this.streamingService.broadcasters$.subscribe({
-      next: (broadcasters) => {
+    this.streamingService.broadcasters$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(broadcasters => {
+        this.broadcasters = broadcasters;
+        // Set up previews for new broadcasters
         // check if broadcasters has currentBroadcasterId
         // Update current broadcaster info if we're viewing
         if (this.is_broadcasting) {
@@ -82,13 +91,17 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
           // this.cleanupStream();
           this.is_viewing = false;
         }
-      },
-      error: (error) => {
-        console.error('Failed to update broadcasters:', error);
-        this.error = `Failed to get broadcasters: ${error.message}`;
-      }
-    });
+        this.setupPreviews();
+      });
 
+    // Subscribe to preview stream states
+    this.previewService.streamState$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(states => {
+        states.forEach((state, broadcasterId) => {
+          this.previewStates.set(broadcasterId, state.connectionState);
+        });
+      });
 
     this.streamingService.getAvailableBroadcasters();
 
@@ -123,14 +136,11 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
 
   }
 
-  requestBroadcastersList(): void {
-    // Request the list of available broadcasters
-    console.log('Requesting broadcasters list...');
-    this.streamingService.getAvailableBroadcasters();
-
-  }
-
   ngAfterViewInit(): void {
+
+    // Initial preview setup
+    this.setupPreviews();
+
     console.log('Video elements initialized:', {
       local: !!this.localVideo,
       remote: !!this.remoteVideo
@@ -140,6 +150,32 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
       const { scrollTop, scrollHeight, clientHeight } = this.messageContainer.nativeElement;
       this.autoScrollEnabled = scrollHeight - scrollTop === clientHeight;
     });
+  }
+
+  requestBroadcastersList(): void {
+    // Request the list of available broadcasters
+    console.log('Requesting broadcasters list...');
+    this.streamingService.getAvailableBroadcasters();
+
+  }
+  private setupPreviews() {
+    this.broadcasters.forEach(broadcaster => {
+      const videoElement = document.querySelector(
+        `#preview-${broadcaster.id}`
+      ) as HTMLVideoElement;
+
+      if (videoElement && !this.previewStates.has(broadcaster.id)) {
+        this.previewService.requestPreview(broadcaster.id, videoElement)
+          .catch(error => {
+            console.error(`Failed to setup preview for ${broadcaster.id}:`, error);
+          });
+      }
+    });
+  }
+
+  // Helper method to get preview state
+  getPreviewState(broadcasterId: string): string {
+    return this.previewStates.get(broadcasterId) || 'connecting';
   }
 
   private scrollToBottom(): void {
@@ -202,6 +238,9 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   async initiateStreamJoin(broadcasterId: string): Promise<void> {
+    // Stop the preview for this broadcaster before joining
+    this.previewService.stopPreview(broadcasterId);
+
     this.leaveStream();
     this.error = null;
 
@@ -281,6 +320,7 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
 
   stopBroadcast(): void {
     this.cleanupStream();
+    this.previewService.cleanup();
     this.streamingService.cleanup();
     this.is_broadcasting = false;
     this.error = null;
@@ -304,6 +344,9 @@ export class StreamingComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+    this.previewService.cleanup();
     this.stopBroadcast();
   }
 
