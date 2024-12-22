@@ -97,19 +97,8 @@
       <div *ngFor="let broadcaster of broadcasters; let index" role="button" tabindex={{index}}
         (click)="!is_broadcasting && currentBroadcaster.id !== broadcaster.id && initiateStreamJoin(broadcaster.id)"
         class="{{broadcaster.id}} overflow-hidden relative flex items-end justify-center w-[300px] h-[300px] border border-solid border-slate-400 dark:border-slate-950 rounded-lg">
-        <!-- Preview Video -->
-        <video #previewVideo [id]="'preview-' + broadcaster.id" autoplay muted playsinline
-          class="z-[1] absolute top-0 left-0 w-full h-full object-cover" autoplay muted playsinline
-          [class.preview-failed]="getPreviewState(broadcaster.id) === 'failed'">
-        </video>
-        <div class="z-[3] absolute top-0 left-0 w-full h-full preview-overlay" *ngIf="getPreviewState(broadcaster.id) === 'connecting'">
-          Loading preview...
-        </div>
-        <div class="z-[4] absolute top-0 left-0 w-full h-full preview-error" *ngIf="getPreviewState(broadcaster.id) === 'failed'">
-          Preview failed to load
-        </div>
         <div
-          class="z-[5] p-2 flex flex-wrap items-start justify-start gap-2 bg-gradient-to-t from-black via-red to-transparent w-full max-h-2/3">
+          class="p-2 flex flex-wrap items-start justify-start gap-2 bg-gradient-to-t from-black via-red to-transparent w-full max-h-2/3">
           <div class="w-full">
             <span class="text-xs rounded-xl bg-indigo-500 text-indigo-950 px-2 py-1">{{broadcaster.viewerCount}}
               watching</span>

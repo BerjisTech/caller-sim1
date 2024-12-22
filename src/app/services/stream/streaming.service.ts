@@ -9,7 +9,6 @@ export interface Broadcaster {
   socket_id?: string;
   name?: string;
   viewerCount?: number;
-  previewStream?: MediaStream;
 }
 
 export interface Viewer {
@@ -20,7 +19,6 @@ export interface Viewer {
 @Injectable({
   providedIn: 'root'
 })
-
 export class StreamingService {
   private messagesSubject = new BehaviorSubject<Array<{ user_id: string; message: string }>>([]);
   public messages$ = this.messagesSubject.asObservable();
@@ -107,23 +105,8 @@ export class StreamingService {
     });
   }
 
-  private async createPreviewStream(): Promise<MediaStream> {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        width: { ideal: 320 },
-        height: { ideal: 240 },
-        frameRate: { ideal: 15 }
-      },
-      audio: false
-    });
-    return stream;
-  }
-
   async startBroadcaster(videoElement: HTMLVideoElement, userId: string): Promise<void> {
     try {
-      // Create preview stream with lower quality
-      const previewStream = await this.createPreviewStream();
-
       this.localStream = await navigator.mediaDevices.getUserMedia({
         video: true,
         audio: true
@@ -132,19 +115,7 @@ export class StreamingService {
       videoElement.srcObject = this.localStream;
       await videoElement.play();
 
-      this.socket.emit('start-stream', { user_id: userId, previewStream: true });
-
-      // Handle preview requests
-      this.socket.on('request-preview', async ({ viewer_id }) => {
-        const previewConnection = this.createPeerConnection(viewer_id);
-        previewStream.getTracks().forEach(track => {
-          previewConnection.addTrack(track, previewStream);
-        });
-
-        const offer = await previewConnection.createOffer();
-        await previewConnection.setLocalDescription(offer);
-        this.socket.emit('preview-offer', { target_id: viewer_id, offer });
-      });
+      this.socket.emit('start-stream', { user_id: userId });
 
       this.socket.on('viewer-joined', ({ viewer_id }) => {
         console.log('New viewer joined:', viewer_id);
@@ -157,25 +128,6 @@ export class StreamingService {
       console.error('Error starting broadcast:', error);
       this.cleanupConnections();
       throw new Error('Failed to start broadcast');
-    }
-  }
-
-  async requestPreview(broadcasterId: string, previewElement: HTMLVideoElement): Promise<void> {
-    try {
-      const peerConnection = this.createPeerConnection(broadcasterId, previewElement);
-
-      this.socket.once('preview-offer', async ({ offer, sender_id }) => {
-        if (peerConnection.signalingState !== 'closed') {
-          await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
-          const answer = await peerConnection.createAnswer();
-          await peerConnection.setLocalDescription(answer);
-          this.socket.emit('preview-answer', { target_id: sender_id, answer });
-        }
-      });
-
-      this.socket.emit('request-preview', { broadcaster_id: broadcasterId });
-    } catch (error) {
-      console.error('Error requesting preview:', error);
     }
   }
 
