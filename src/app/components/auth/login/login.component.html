@@ -1,19 +1,29 @@
-<div class="login-container">
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-        <div class="form-group">
-            <input type="email" formControlName="email" placeholder="Email">
+<button (click)="show_login = !show_login" class="bg-indigo-800 text-indigo-100 py-2 px-5 rounded-lg">Login</button>
+<div *ngIf="show_login" #loginContainer
+    class="fixed top-[75px] right-10 shadow w-[400px] h-auto max-h-[500px] rounded-ld bg-indigo-100 dark:bg-indigo-900 p-5 flex flex-col gap-3">
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="flex flex-col items-start justify-start gap-5">
+        <div class="form-group relative w-full flex flex-col items-start justify-center">
+            <span
+                class="{{ email_selected ? 'flex px-0' : 'absolute px-3'}} {{ (email && !email_selected) ? 'hidden' : 'block'}} py-2 pointer-events-none">Email</span>
+            <input (focus)="email_selected = true" (blur)="email_selected = false" type="email" class="py-2 px-3 w-full"
+                formControlName="email" [(ngModel)]="email">
+
         </div>
-        <div class="form-group">
-            <input type="password" formControlName="password" placeholder="Password">
+        <div class="form-group group relative w-full flex flex-col items-start justify-center">
+            <span
+                class="{{ password_selected ? 'flex px-0' : 'absolute px-3'}} {{ (password && !password_selected) ? 'hidden' : 'block'}} py-2 pointer-events-none">Password</span>
+            <input (focus)="password_selected = true" (blur)="password_selected = false" type="password"
+                class="py-2 px-3 w-full" formControlName="password" [(ngModel)]="password">
         </div>
-        <button type="submit" [disabled]="loginForm.invalid">Login</button>
+        <button class="bg-indigo-800 text-indigo-100 py-2 px-5 rounded-lg" type="submit"
+            [disabled]="loginForm.invalid">Login</button>
     </form>
 
-    <div class="social-login">
-        <button (click)="googleLogin()">
+    <div class="social-login flex items-center justify-center gap-3">
+        <button class="bg-indigo-800 text-indigo-100 py-2 px-5 rounded-lg" (click)="googleLogin()">
             Login with Google
         </button>
-        <button (click)="githubLogin()">
+        <button class="bg-indigo-800 text-indigo-100 py-2 px-5 rounded-lg" (click)="githubLogin()">
             Login with GitHub
         </button>
     </div>

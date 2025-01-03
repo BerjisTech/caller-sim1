@@ -1,5 +1,5 @@
 // src/app/components/login/login.component.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../services/user/auth.service';
@@ -13,7 +13,14 @@ import { CommonModule } from '@angular/common';
   styleUrl: './login.component.scss'
 })
 export class LoginComponent implements OnInit {
-  loginForm: FormGroup;
+  @ViewChild('loginContainer') loginContainer?: ElementRef;
+
+  public loginForm: FormGroup;
+  public show_login: boolean = false;
+  public email_selected: boolean = false;
+  public password_selected: boolean = false;
+  public email: string = '';
+  public password: string = '';
 
   constructor(
     private formBuilder: FormBuilder,
@@ -29,21 +36,41 @@ export class LoginComponent implements OnInit {
   ngOnInit() {
     // Listen for OAuth popup message
     window.addEventListener('message', this.handleOAuthMessage.bind(this));
+    document.addEventListener('click', this.onDocumentClick.bind(this));
+  }
+
+  onDocumentClick = (event: MouseEvent): void => {
+    // Check if login is shown and click target is not null
+    if (!this.show_login || !event.target) return;
+
+    // Check if click was outside the login container
+    const clickedElement = event.target as HTMLElement;
+    if (this.loginContainer?.nativeElement &&
+      !this.loginContainer.nativeElement.contains(clickedElement) &&
+      !clickedElement.closest('button')) {
+      this.show_login = false;
+    }
   }
 
   onSubmit() {
-    if (this.loginForm.valid) {
-      this.authService.login(
-        this.loginForm.get('email')?.value,
-        this.loginForm.get('password')?.value
-      ).subscribe({
-        next: () => {
-          this.router.navigate(['/dashboard']);
-        },
-        error: error => {
-          console.error('Login failed:', error);
-        }
-      });
+    try {
+      if (this.loginForm.valid) {
+        this.authService.login(
+          this.loginForm.get('email')?.value,
+          this.loginForm.get('password')?.value
+        ).subscribe({
+          next: () => {
+            this.router.navigate(['/dashboard']);
+          },
+          error: error => {
+            console.error('Login failed:', error);
+          }
+        });
+      } else {
+        console.error('Form is invalid');
+      }
+    } catch (error) {
+      console.error('Login failed:', error);
     }
   }
 
@@ -64,5 +91,6 @@ export class LoginComponent implements OnInit {
 
   ngOnDestroy() {
     window.removeEventListener('message', this.handleOAuthMessage.bind(this));
+    document.removeEventListener('click', this.onDocumentClick.bind(this));
   }
 }
