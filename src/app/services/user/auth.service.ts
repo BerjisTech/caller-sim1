@@ -41,7 +41,7 @@ export class AuthService {
     const top = (screen.height / 2) - (height / 2);
     
     window.open(
-      `${this.apiUrl}/users/auth/google_oauth2`,
+      `${this.apiUrl}/auth/google_oauth2`,
       'google_login',
       `width=${width},height=${height},left=${left},top=${top}`
     );
@@ -55,7 +55,7 @@ export class AuthService {
     const top = (screen.height / 2) - (height / 2);
     
     window.open(
-      `${this.apiUrl}/users/auth/github`,
+      `${this.apiUrl}/auth/github`,
       'github_login',
       `width=${width},height=${height},left=${left},top=${top}`
     );
