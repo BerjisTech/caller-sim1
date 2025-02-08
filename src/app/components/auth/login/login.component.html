@@ -1,7 +1,10 @@
 <button (click)="show_login = !show_login" class="bg-indigo-800 text-indigo-100 py-2 px-5 rounded-lg">Login</button>
+
+<button (click)="show_signup = !show_signup" class="bg-indigo-800 text-indigo-100 py-2 px-5 rounded-lg">Sign Up</button>
+
 <div *ngIf="show_login" #loginContainer
-    class="fixed top-[75px] right-10 shadow w-[400px] h-auto max-h-[500px] rounded-ld bg-indigo-100 dark:bg-indigo-900 p-5 flex flex-col gap-3">
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="flex flex-col items-start justify-start gap-5">
+    class="z-[200000] fixed top-[75px] right-10 shadow w-[400px] h-auto max-h-[500px] rounded-ld bg-indigo-100 dark:bg-indigo-900 p-5 flex flex-col gap-3">
+    <form [formGroup]="loginForm" (ngSubmit)="onSigninSubmit()" class="flex flex-col items-start justify-start gap-5">
         <div class="form-group relative w-full flex flex-col items-start justify-center">
             <span
                 class="{{ email_selected ? 'flex px-0' : 'absolute px-3'}} {{ (email && !email_selected) ? 'hidden' : 'block'}} py-2 pointer-events-none">Email</span>
@@ -26,5 +29,39 @@
         <button class="bg-indigo-800 text-indigo-100 py-2 px-5 rounded-lg" (click)="githubLogin()">
             Login with GitHub
         </button>
+    </div>
+</div>
+
+<div *ngIf="show_signup"
+    class="z-[200000] fixed top-[75px] right-10 shadow w-[400px] h-auto max-h-[500px] rounded-lg bg-indigo-100 dark:bg-indigo-900 p-5 flex flex-col gap-3">
+    <form [formGroup]="signupForm" (ngSubmit)="onSignupSubmit()" class="flex flex-col items-start justify-start gap-5">
+        <div class="form-group relative w-full flex flex-col items-start justify-center">
+            <span
+                class="{{ email_selected ? 'flex px-0' : 'absolute px-3'}} {{ (email && !email_selected) ? 'hidden' : 'block'}} py-2 pointer-events-none">Email</span>
+            <input (focus)="email_selected = true" (blur)="email_selected = false" type="email" class="py-2 px-3 w-full"
+                formControlName="email" [(ngModel)]="email">
+        </div>
+        <div class="form-group relative w-full flex flex-col items-start justify-center">
+            <span
+                class="{{ password_selected ? 'flex px-0' : 'absolute px-3'}} {{ (password && !password_selected) ? 'hidden' : 'block'}} py-2 pointer-events-none">Password</span>
+            <input (focus)="password_selected = true" (blur)="password_selected = false" type="password"
+                class="py-2 px-3 w-full" formControlName="password" [(ngModel)]="password">
+        </div>
+        <div class="form-group relative w-full flex flex-col items-start justify-center">
+            <span
+                class="{{ confirm_password_selected ? 'flex px-0' : 'absolute px-3'}} {{ (confirmPassword && !confirm_password_selected) ? 'hidden' : 'block'}} py-2 pointer-events-none">Confirm
+                Password</span>
+            <input (focus)="confirm_password_selected = true" (blur)="confirm_password_selected = false" type="password"
+                class="py-2 px-3 w-full" formControlName="confirmPassword" [(ngModel)]="confirmPassword">
+        </div>
+        <button class="bg-indigo-800 text-indigo-100 py-2 px-5 rounded-lg" type="submit"
+            [disabled]="signupForm.invalid">Sign Up</button>
+    </form>
+
+    <div class="social-login flex items-center justify-center gap-3">
+        <button class="bg-indigo-800 text-indigo-100 py-2 px-5 rounded-lg" (click)="googleLogin()">Sign Up with
+            Google</button>
+        <button class="bg-indigo-800 text-indigo-100 py-2 px-5 rounded-lg" (click)="githubLogin()">Sign Up with
+            GitHub</button>
     </div>
 </div>

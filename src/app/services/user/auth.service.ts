@@ -33,13 +33,23 @@ export class AuthService {
       }));
   }
 
+  register(email: string, password: string) {
+    return this.http.post<any>(`${this.apiUrl}/signup`, { user: { email, password } })
+      .pipe(map(response => {
+        localStorage.setItem('currentUser', JSON.stringify(response.data));
+        localStorage.setItem('token', response.token);
+        this.currentUserSubject.next(response.data);
+        return response;
+      }));
+  }
+
   googleAuth() {
     // Open Google OAuth URL in a popup
     const width = 500;
     const height = 600;
     const left = (screen.width / 2) - (width / 2);
     const top = (screen.height / 2) - (height / 2);
-    
+
     window.open(
       `${this.apiUrl}/auth/google_oauth2`,
       'google_login',
@@ -53,7 +63,7 @@ export class AuthService {
     const height = 600;
     const left = (screen.width / 2) - (width / 2);
     const top = (screen.height / 2) - (height / 2);
-    
+
     window.open(
       `${this.apiUrl}/auth/github`,
       'github_login',

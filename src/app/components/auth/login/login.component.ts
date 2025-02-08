@@ -15,12 +15,16 @@ import { CommonModule } from '@angular/common';
 export class LoginComponent implements OnInit {
   @ViewChild('loginContainer') loginContainer?: ElementRef;
 
+  public signupForm: FormGroup;
   public loginForm: FormGroup;
   public show_login: boolean = false;
+  public show_signup: boolean = false;
   public email_selected: boolean = false;
   public password_selected: boolean = false;
   public email: string = '';
   public password: string = '';
+  public confirm_password_selected: boolean = false;
+  public confirmPassword: string = '';
 
   constructor(
     private formBuilder: FormBuilder,
@@ -31,6 +35,13 @@ export class LoginComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required]
     });
+
+
+    this.signupForm = this.formBuilder.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', Validators.required]
+    }, { validator: this.passwordMatchValidator });
   }
 
   ngOnInit() {
@@ -52,7 +63,24 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  onSubmit() {
+  passwordMatchValidator(form: FormGroup) {
+    return form.get('password')!.value === form.get('confirmPassword')!.value
+      ? null : { mismatch: true };
+  }
+
+  onSignupSubmit() {
+    if (this.signupForm.valid) {
+      const { email, password } = this.signupForm.value;
+      this.authService.register(email, password).subscribe({
+        next: () => this.router.navigate(['/dashboard']),
+        error: error => console.error('Signup failed:', error)
+      });
+    } else {
+      console.error('Form is invalid');
+    }
+  }
+
+  onSigninSubmit() {
     try {
       if (this.loginForm.valid) {
         this.authService.login(
