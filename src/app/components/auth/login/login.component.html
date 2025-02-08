@@ -1,7 +1,10 @@
-<button (click)="show_login = !show_login" class="bg-indigo-800 text-indigo-100 py-2 px-5 rounded-lg">Login</button>
+<div class="flex flex-wwrap gap-3">
+    <button (click)="show_login = !show_login && show_signup = false"
+        class="bg-indigo-800 text-indigo-100 py-2 px-5 rounded-lg">Login</button>
 
-<button (click)="show_signup = !show_signup" class="bg-indigo-800 text-indigo-100 py-2 px-5 rounded-lg">Sign Up</button>
-
+    <button (click)="show_signup = !show_signup && show_login = false"
+        class="bg-indigo-800 text-indigo-100 py-2 px-5 rounded-lg">Sign Up</button>
+</div>
 <div *ngIf="show_login" #loginContainer
     class="z-[200000] fixed top-[75px] right-10 shadow w-[400px] h-auto max-h-[500px] rounded-ld bg-indigo-100 dark:bg-indigo-900 p-5 flex flex-col gap-3">
     <form [formGroup]="loginForm" (ngSubmit)="onSigninSubmit()" class="flex flex-col items-start justify-start gap-5">
