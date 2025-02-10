@@ -42,6 +42,11 @@ export class LoginComponent implements OnInit {
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', Validators.required]
     }, { validator: this.passwordMatchValidator });
+
+    // Set showw_login and show_signup to false if r3_token exists in localStorage
+    if (localStorage.getItem('r3_token')) {
+      this.hideAuthButtons();
+    }
   }
 
   ngOnInit() {
@@ -72,7 +77,7 @@ export class LoginComponent implements OnInit {
     if (this.signupForm.valid) {
       const { email, password } = this.signupForm.value;
       this.authService.register(email, password).subscribe({
-        next: () => this.router.navigate(['/dashboard']),
+        next: () => this.hideAuthButtons(), // this.router.navigate(['/dashboard']),
         error: error => console.error('Signup failed:', error)
       });
     } else {
@@ -88,7 +93,8 @@ export class LoginComponent implements OnInit {
           this.loginForm.get('password')?.value
         ).subscribe({
           next: () => {
-            this.router.navigate(['/dashboard']);
+            // this.router.navigate(['/dashboard']);
+            this.hideAuthButtons()
           },
           error: error => {
             console.error('Login failed:', error);
@@ -115,6 +121,11 @@ export class LoginComponent implements OnInit {
       this.authService.handleOAuthCallback(event.data.response);
       this.router.navigate(['/dashboard']);
     }
+  }
+
+  private hideAuthButtons() {
+    this.show_login = false;
+    this.show_signup = false;
   }
 
   ngOnDestroy() {

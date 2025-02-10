@@ -27,7 +27,7 @@ export class AuthService {
       .pipe(map(response => {
         // store user details and jwt token in local storage
         localStorage.setItem('currentUser', JSON.stringify(response.data));
-        localStorage.setItem('token', response.token);
+        localStorage.setItem('r3_token', response.token);
         this.currentUserSubject.next(response.data);
         return response;
       }));
@@ -37,7 +37,7 @@ export class AuthService {
     return this.http.post<any>(`${this.apiUrl}/signup`, { user: { email, password } })
       .pipe(map(response => {
         localStorage.setItem('currentUser', JSON.stringify(response.data));
-        localStorage.setItem('token', response.token);
+        localStorage.setItem('r3_token', response.token);
         this.currentUserSubject.next(response.data);
         return response;
       }));
