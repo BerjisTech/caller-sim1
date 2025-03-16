@@ -80,7 +80,7 @@ export class AuthService {
     }
   }
 
-  logout() {
+  logout(redirect: boolean = true) {
     this.http.delete(`${this.apiUrl}/logout`).pipe(
       map(() => {
         // remove user from local storage to log user out
@@ -90,6 +90,6 @@ export class AuthService {
       })
     );
     // Send to /
-    window.location.href = '/';
+    if (redirect) window.location.href = '/';
   }
 }

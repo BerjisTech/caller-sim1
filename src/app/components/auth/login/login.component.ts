@@ -17,6 +17,7 @@ export class LoginComponent implements OnInit {
 
   public signupForm: FormGroup;
   public loginForm: FormGroup;
+  public loggedIn: boolean = false;
   public show_login: boolean = false;
   public show_signup: boolean = false;
   public email_selected: boolean = false;
@@ -53,6 +54,18 @@ export class LoginComponent implements OnInit {
     // Listen for OAuth popup message
     window.addEventListener('message', this.handleOAuthMessage.bind(this));
     document.addEventListener('click', this.onDocumentClick.bind(this));
+
+    this.authService.currentUser.subscribe((user) => {
+      console.log(user);
+      if (!user) {
+        console.log('no user');
+        this.authService.logout(false);
+        this.loggedIn = false;
+      } else {
+        console.log('user');
+        this.loggedIn = true;
+      }
+    });
   }
 
   onDocumentClick = (event: MouseEvent): void => {
