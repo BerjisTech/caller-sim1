@@ -93,7 +93,7 @@ export class LoginComponent implements OnInit {
           this.loginForm.get('password')?.value
         ).subscribe({
           next: () => {
-            // this.router.navigate(['/dashboard']);
+            // this.router.navigate(['/g0']);
             this.hideAuthButtons()
           },
           error: error => {
@@ -119,7 +119,7 @@ export class LoginComponent implements OnInit {
   private handleOAuthMessage(event: MessageEvent) {
     if (event.data.type === 'oauth-response') {
       this.authService.handleOAuthCallback(event.data.response);
-      this.router.navigate(['/dashboard']);
+      this.router.navigate(['/g0']);
     }
   }
 

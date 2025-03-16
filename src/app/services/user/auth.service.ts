@@ -74,13 +74,13 @@ export class AuthService {
   handleOAuthCallback(response: any) {
     if (response.data && response.token) {
       localStorage.setItem('currentUser', JSON.stringify(response.data));
-      localStorage.setItem('token', response.token);
+      localStorage.setItem('r3_token', response.token);
       this.currentUserSubject.next(response.data);
     }
   }
 
   logout() {
-    return this.http.delete(`${this.apiUrl}/logout`).pipe(
+    this.http.delete(`${this.apiUrl}/logout`).pipe(
       map(() => {
         // remove user from local storage to log user out
         localStorage.removeItem('currentUser');
@@ -88,5 +88,7 @@ export class AuthService {
         this.currentUserSubject.next(null);
       })
     );
+    // Send to /
+    window.location.href = '/';
   }
 }
