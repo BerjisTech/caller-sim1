@@ -1,6 +1,6 @@
 // src/app/services/auth.service.ts
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
@@ -82,12 +82,25 @@ export class AuthService {
   }
 
   logout(redirect: boolean = true) {
-    this.http.delete(`${this.apiUrl}/logout`).subscribe(() => {
-      // Remove user data and token
-      localStorage.removeItem('currentUser');
-      localStorage.removeItem('r3_token'); // Corrected key
-      this.currentUserSubject.next(null);
-      if (redirect) window.location.href = '/';
+    // Add proper headers
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${localStorage.getItem('r3_token')}`
+    });
+
+    this.http.delete(`${this.apiUrl}/logout`, { headers }).subscribe({
+      next: () => {
+        localStorage.removeItem('currentUser');
+        localStorage.removeItem('r3_token');
+        this.currentUserSubject.next(null);
+        if (redirect) window.location.href = '/';
+      },
+      error: (err) => {
+        console.error('Logout error:', err);
+        // Force cleanup even if server errors
+        localStorage.removeItem('currentUser');
+        localStorage.removeItem('r3_token');
+        this.currentUserSubject.next(null);
+      }
     });
   }
 }
