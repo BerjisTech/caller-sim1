@@ -129,6 +129,10 @@ export class LoginComponent implements OnInit {
     this.authService.githubAuth();
   }
 
+  logout() {
+    this.authService.logout();
+  }
+
   private handleOAuthMessage(event: MessageEvent) {
     if (event.data.type === 'oauth-response') {
       this.authService.handleOAuthCallback(event.data.response);

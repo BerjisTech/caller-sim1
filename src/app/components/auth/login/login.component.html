@@ -1,3 +1,6 @@
+<div class="" *ngIf="loggedIn">
+    <button (click)="logout()" class="bg-indigo-800 text-indigo-100 py-2 px-5 rounded-lg material-symbols-outlined">logout</button>
+</div>
 <div class="flex flex-wwrap gap-3" *ngIf="!loggedIn">
     <button (click)="show_login = !show_login" class="bg-indigo-800 text-indigo-100 py-2 px-5 rounded-lg">Login</button>
 
