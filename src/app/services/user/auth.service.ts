@@ -26,9 +26,10 @@ export class AuthService {
     return this.http.post<any>(`${this.apiUrl}/login`, { user: { email, password } })
       .pipe(map(response => {
         // store user details and jwt token in local storage
-        localStorage.setItem('currentUser', JSON.stringify(response.data));
-        localStorage.setItem('r3_token', response.token);
-        this.currentUserSubject.next(response.data);
+        let data = response.data;
+        localStorage.setItem('currentUser', data.user);
+        localStorage.setItem('r3_token', data.token);
+        this.currentUserSubject.next(data.user);
         console.log(response);
         return response;
       }));
@@ -81,15 +82,12 @@ export class AuthService {
   }
 
   logout(redirect: boolean = true) {
-    this.http.delete(`${this.apiUrl}/logout`).pipe(
-      map(() => {
-        // remove user from local storage to log user out
-        localStorage.removeItem('currentUser');
-        localStorage.removeItem('token');
-        this.currentUserSubject.next(null);
-      })
-    );
-    // Send to /
-    if (redirect) window.location.href = '/';
+    this.http.delete(`${this.apiUrl}/logout`).subscribe(() => {
+      // Remove user data and token
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('r3_token'); // Corrected key
+      this.currentUserSubject.next(null);
+      if (redirect) window.location.href = '/';
+    });
   }
 }

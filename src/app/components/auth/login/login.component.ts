@@ -56,15 +56,8 @@ export class LoginComponent implements OnInit {
     document.addEventListener('click', this.onDocumentClick.bind(this));
 
     this.authService.currentUser.subscribe((user) => {
+      this.loggedIn = !!user && !!localStorage.getItem('r3_token');
       console.log(user);
-      if (!user) {
-        console.log('no user');
-        this.authService.logout(false);
-        this.loggedIn = false;
-      } else {
-        console.log('user');
-        this.loggedIn = true;
-      }
     });
   }
 
