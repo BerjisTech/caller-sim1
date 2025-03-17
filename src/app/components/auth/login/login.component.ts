@@ -131,6 +131,7 @@ export class LoginComponent implements OnInit {
 
   logout() {
     this.authService.logout();
+    this.loggedIn = false;
   }
 
   private handleOAuthMessage(event: MessageEvent) {
